@@ -137,7 +137,7 @@ async function loadServerInfo() {
     if (netIP)       netIP.textContent       = ip;
     if (endpointBox) endpointBox.textContent = ip !== '—'
       ? `http://${ip}:${port}/clip`
-      : `http://openpaste.local:${port}/clip`;
+      : '—';
   } catch (err) {
     console.error('[onboarding] Could not load server info:', err);
   }

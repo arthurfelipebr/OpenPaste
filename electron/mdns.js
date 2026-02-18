@@ -75,18 +75,43 @@ async function stop() {
 
 /**
  * Retorna o endereço IPv4 local da máquina (para exibir nas configurações).
- * @returns {string}
+ * @returns {string|null}
  */
 function getLocalIP() {
   const interfaces = os.networkInterfaces();
-  for (const iface of Object.values(interfaces)) {
+  const entries = [];
+
+  for (const [name, iface] of Object.entries(interfaces)) {
+    if (!Array.isArray(iface)) continue;
     for (const alias of iface) {
-      if (alias.family === 'IPv4' && !alias.internal) {
-        return alias.address;
-      }
+      if (!alias || alias.family !== 'IPv4' || alias.internal) continue;
+      entries.push({
+        name,
+        address: alias.address,
+      });
     }
   }
-  return '127.0.0.1';
+
+  if (!entries.length) return null;
+
+  const isPrivateIPv4 = (ip) => {
+    const p = ip.split('.').map((n) => Number(n));
+    if (p.length !== 4 || p.some((n) => Number.isNaN(n) || n < 0 || n > 255)) return false;
+    return (
+      p[0] === 10 ||
+      (p[0] === 172 && p[1] >= 16 && p[1] <= 31) ||
+      (p[0] === 192 && p[1] === 168)
+    );
+  };
+
+  const lanCandidates = entries.filter((e) => isPrivateIPv4(e.address));
+  if (!lanCandidates.length) return null;
+
+  // Em Windows, priorizar adaptadores comuns de rede local.
+  const preferred = lanCandidates.find((e) => /(wi-?fi|wlan|wireless|ethernet|^eth|lan)/i.test(e.name));
+  if (preferred) return preferred.address;
+
+  return lanCandidates[0].address;
 }
 
 module.exports = { advertise, stop, getLocalIP };
