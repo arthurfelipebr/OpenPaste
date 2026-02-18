@@ -2,6 +2,9 @@
 
 Bridge iPhone → Windows para envio de texto, URLs, imagens e arquivos em segundos.
 
+> **GitHub:** https://github.com/arthurfelipebr/OpenPaste
+> **Landing page:** https://arthurfelipebr.github.io/OpenPaste/landing-page/
+
 ## Como funciona
 
 ```
