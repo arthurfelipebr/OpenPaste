@@ -34,7 +34,7 @@ jobs:
         working-directory: electron
         run: npm ci --prefer-offline
 
-      # ── 4. Build NSIS + Portable ────────────────────────────
+      # ── 4. Build NSIS installer ─────────────────────────────
       - name: Build installer
         working-directory: electron
         run: npm run build -- --publish never
@@ -52,7 +52,9 @@ jobs:
         with:
           name: OpenPaste-${{ github.sha }}
           path: |
-            dist/**/*.exe
+            dist/OpenPaste Setup *.exe
+            dist/OpenPaste Setup *.exe.blockmap
+            dist/latest.yml
           retention-days: 14
 
       # ── 7. Criar GitHub Release (somente em tags v*) ─────────
@@ -61,9 +63,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/**/*.exe
-            dist/**/*.blockmap
-            dist/**/latest.yml
+            dist/OpenPaste Setup *.exe
+            dist/OpenPaste Setup *.exe.blockmap
+            dist/latest.yml
           generate_release_notes: true
           draft: false
           prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') }}
