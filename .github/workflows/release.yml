@@ -2,12 +2,14 @@ name: Build & Release
 
 on:
   push:
+    branches:
+      - develop-alpha    # build automático a cada push na develop-alpha
     tags:
-      - 'v*'          # dispara em tags como v1.0.0, v1.2.3
-  workflow_dispatch:  # permite rodar manualmente pela UI do GitHub
+      - 'v*'             # e em tags de release (v0.0.1, v1.0.0, …)
+  workflow_dispatch:     # permite rodar manualmente pela UI do GitHub
 
 permissions:
-  contents: write    # necessário para criar releases e fazer upload de assets
+  contents: write        # necessário para criar releases e fazer upload de assets
 
 jobs:
   build-windows:
@@ -44,10 +46,21 @@ jobs:
         run: Get-ChildItem -Path dist -Recurse -File | Select-Object FullName, Length
         shell: pwsh
 
-      # ── 6. Upload para a Release do GitHub ──────────────────
+      # ── 6. Upload de artefato no Actions (push de branch) ────
+      #       Disponível na aba Actions mesmo sem criar uma Release
+      - name: Upload build artifact
+        if: "!startsWith(github.ref, 'refs/tags/')"
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenPaste-${{ github.sha }}
+          path: |
+            dist/**/*.exe
+          retention-days: 14
+
+      # ── 7. Criar GitHub Release (somente em tags v*) ─────────
       - name: Upload release assets
-        uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             dist/**/*.exe
@@ -55,6 +68,6 @@ jobs:
             dist/**/latest.yml
           generate_release_notes: true
           draft: false
-          prerelease: false
+          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

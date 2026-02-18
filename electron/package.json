@@ -1,6 +1,6 @@
 {
   "name": "openpaste",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Bridge iPhone → Windows: clipboard e arquivos em segundos.",
   "main": "main.js",
   "author": "Arthur Felipe <arthurfelipebr@gmail.com>",
