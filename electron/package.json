@@ -1,0 +1,57 @@
+{
+  "name": "openpaste",
+  "version": "1.0.0",
+  "description": "Bridge iPhone → Windows: clipboard e arquivos em segundos.",
+  "main": "main.js",
+  "author": "OpenPaste",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder --win",
+    "build:all": "electron-builder --win --mac --linux"
+  },
+  "dependencies": {
+    "auto-launch": "^5.0.6",
+    "bonjour-service": "^1.2.1",
+    "clipboardy": "^4.0.0",
+    "electron-store": "^8.2.0",
+    "express": "^4.19.2",
+    "multer": "^2.0.2"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^26.8.1"
+  },
+  "build": {
+    "appId": "com.openpaste.app",
+    "productName": "OpenPaste",
+    "icon": "assets/icon.png",
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "runAfterFinish": true
+    },
+    "files": [
+      "**/*",
+      "!**/node_modules/.cache/**",
+      "!**/*.{iobj,ipdb}"
+    ],
+    "extraResources": [],
+    "directories": {
+      "output": "../dist"
+    }
+  }
+}

@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenPaste — iPhone meets Windows</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── RESET ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    /* ─── TOKENS ─────────────────────────────────────────── */
+    :root {
+      --black:    #0a0a0b;
+      --surface:  #111114;
+      --card:     #18181c;
+      --border:   #27272d;
+      --amber:    #f5a623;
+      --amber-dim:#7a4f08;
+      --cyan:     #00d4c8;
+      --white:    #f0ede8;
+      --muted:    #6b6874;
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-body:    'DM Sans', sans-serif;
+      --font-mono:    'DM Mono', monospace;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── NOISE OVERLAY ──────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: .035;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* ─── NAV ─────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 48px;
+      border-bottom: 1px solid transparent;
+      transition: border-color .3s, background .3s;
+    }
+
+    nav.scrolled {
+      background: rgba(10,10,11,.85);
+      backdrop-filter: blur(12px);
+      border-color: var(--border);
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 22px;
+      letter-spacing: 3px;
+      color: var(--amber);
+    }
+
+    .nav-logo span { color: var(--white); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: .5px;
+      color: var(--muted);
+      transition: color .2s;
+      text-transform: uppercase;
+    }
+
+    .nav-links a:hover { color: var(--white); }
+
+    .nav-cta {
+      background: var(--amber);
+      color: var(--black) !important;
+      padding: 8px 20px;
+      border-radius: 4px;
+      font-weight: 500 !important;
+    }
+
+    .nav-cta:hover { background: #ffc04a; }
+
+    /* ─── HERO ─────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 140px 48px 80px;
+      gap: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: -100px; right: -100px;
+      width: 700px; height: 700px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      opacity: .4;
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 24px;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 32px; height: 1px;
+      background: var(--amber);
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(64px, 8vw, 116px);
+      line-height: .92;
+      letter-spacing: 1px;
+      margin-bottom: 28px;
+    }
+
+    .hero-title .line-amber { color: var(--amber); }
+    .hero-title .line-outline {
+      -webkit-text-stroke: 1px rgba(240,237,232,.2);
+      color: transparent;
+    }
+
+    .hero-sub {
+      font-size: 17px;
+      font-weight: 300;
+      color: var(--muted);
+      max-width: 440px;
+      margin-bottom: 44px;
+      line-height: 1.7;
+    }
+
+    .hero-sub strong { color: var(--white); font-weight: 500; }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--amber);
+      color: var(--black);
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 14px 28px;
+      border-radius: 4px;
+      text-decoration: none;
+      letter-spacing: .3px;
+      transition: background .2s, transform .15s;
+    }
+
+    .btn-primary:hover { background: #ffc04a; transform: translateY(-2px); }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      text-decoration: none;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 2px;
+      transition: color .2s, border-color .2s;
+    }
+
+    .btn-ghost:hover { color: var(--white); border-color: var(--white); }
+
+    /* hero visual */
+    .hero-visual {
+      position: relative;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .terminal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 480px;
+      overflow: hidden;
+      box-shadow: 0 40px 120px rgba(0,0,0,.6), 0 0 0 1px rgba(245,166,35,.08);
+    }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,.02);
+    }
+
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ff5f57; }
+    .dot-yel { background: #febc2e; }
+    .dot-grn { background: #28c840; }
+
+    .terminal-title {
+      flex: 1;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .terminal-body {
+      padding: 24px 20px;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.9;
+    }
+
+    .t-muted { color: var(--muted); }
+    .t-amber { color: var(--amber); }
+    .t-cyan  { color: var(--cyan); }
+    .t-green { color: #5af78e; }
+    .t-white { color: var(--white); }
+    .t-dim   { color: #3d3d45; }
+
+    .cursor {
+      display: inline-block;
+      width: 7px; height: 14px;
+      background: var(--amber);
+      vertical-align: middle;
+      margin-left: 2px;
+      animation: blink 1.1s step-end infinite;
+    }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .hero-badge {
+      position: absolute;
+      bottom: -20px; left: -30px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--amber);
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      color: var(--muted);
+      box-shadow: 0 20px 60px rgba(0,0,0,.5);
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .hero-badge strong { color: var(--amber); display: block; font-size: 18px; margin-bottom: 2px; }
+
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+    /* ─── TICKER ──────────────────────────────────────────── */
+    .ticker {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .ticker-track {
+      display: inline-flex;
+      gap: 64px;
+      animation: ticker 22s linear infinite;
+    }
+
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .ticker-item .sep { color: var(--amber); }
+
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* ─── SECTIONS ────────────────────────────────────────── */
+    .section { padding: 120px 48px; }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 16px;
+    }
+
+    .section-label span { display: inline-block; width: 24px; height: 1px; background: var(--amber); }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(48px, 6vw, 88px);
+      line-height: .95;
+      letter-spacing: .5px;
+      margin-bottom: 80px;
+    }
+
+    .section-title em { font-style: normal; -webkit-text-stroke: 1px rgba(240,237,232,.2); color: transparent; }
+
+    /* ─── HOW IT WORKS ────────────────────────────────────── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .step {
+      background: var(--card);
+      padding: 40px 36px;
+      transition: background .2s;
+    }
+
+    .step:hover { background: #1e1e23; }
+
+    .step-num {
+      font-family: var(--font-display);
+      font-size: 80px;
+      line-height: 1;
+      color: var(--border);
+      margin-bottom: 24px;
+      display: block;
+      transition: color .2s;
+    }
+
+    .step:hover .step-num { color: var(--amber-dim); }
+    .step-icon { font-size: 28px; margin-bottom: 16px; display: block; }
+    .step h3 { font-size: 20px; font-weight: 500; margin-bottom: 10px; }
+    .step p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+    /* ─── FEATURES ────────────────────────────────────────── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .features-list { display: flex; flex-direction: column; gap: 2px; }
+
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 24px 20px;
+      border-radius: 8px;
+      transition: background .2s;
+    }
+
+    .feature-item:hover { background: var(--card); }
+
+    .feature-icon {
+      width: 40px; height: 40px;
+      border-radius: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .feature-item:hover .feature-icon {
+      border-color: var(--amber-dim);
+      box-shadow: 0 0 20px rgba(245,166,35,.1);
+    }
+
+    .feature-text h4 { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+    .feature-text p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    /* phone mockup */
+    .features-visual { position: relative; }
+
+    .phone-mockup {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 40px;
+      padding: 20px;
+      max-width: 280px;
+      margin: 0 auto;
+      box-shadow: 0 60px 140px rgba(0,0,0,.7);
+    }
+
+    .phone-screen { background: #0d0d10; border-radius: 26px; overflow: hidden; }
+
+    .phone-notch {
+      height: 28px;
+      background: var(--card);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .phone-notch-bar { width: 100px; height: 10px; background: #000; border-radius: 5px; }
+    .phone-body { padding: 20px 16px 30px; }
+
+    .share-sheet {
+      background: rgba(255,255,255,.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .share-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+      padding: 14px;
+      color: var(--muted);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+
+    .share-apps { display: flex; gap: 16px; padding: 16px; justify-content: center; }
+
+    .share-app {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .share-app-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+
+    .share-app-icon.highlight {
+      background: linear-gradient(135deg, #f5a623, #e08210);
+      box-shadow: 0 8px 24px rgba(245,166,35,.4);
+    }
+
+    .share-app-icon.dim { background: rgba(255,255,255,.07); }
+
+    .share-actions { display: flex; flex-direction: column; gap: 1px; padding: 0 12px 12px; }
+
+    .share-action {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(255,255,255,.04);
+      border-radius: 10px;
+      font-size: 13px;
+    }
+
+    .share-action.active { background: rgba(245,166,35,.12); color: var(--amber); }
+
+    .notif {
+      position: absolute;
+      top: -20px; right: -40px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--cyan);
+      border-radius: 10px;
+      padding: 12px 14px;
+      width: 200px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.5);
+      animation: float 3.5s ease-in-out infinite;
+    }
+
+    .notif-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      color: var(--muted);
+      margin-bottom: 4px;
+      font-family: var(--font-mono);
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+
+    .notif-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); }
+    .notif p { font-size: 12px; color: var(--white); font-weight: 500; }
+    .notif small { display: block; font-size: 11px; color: var(--muted); margin-top: 2px; font-family: var(--font-mono); }
+
+    /* ─── SHORTCUT SECTION ────────────────────────────────── */
+    .shortcut-section {
+      padding: 120px 48px;
+      border-top: 1px solid var(--border);
+    }
+
+    .shortcut-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: start;
+    }
+
+    /* Install card */
+    .install-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 40px 100px rgba(0,0,0,.5);
+      position: sticky;
+      top: 100px;
+    }
+
+    .install-card-header {
+      padding: 24px 28px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .install-card-icon {
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #f5a623, #e08210);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+      box-shadow: 0 8px 24px rgba(245,166,35,.3);
+    }
+
+    .install-card-title { font-size: 18px; font-weight: 600; margin-bottom: 2px; }
+    .install-card-sub { font-size: 12px; color: var(--muted); }
+
+    .install-card-body { padding: 24px 28px; display: flex; flex-direction: column; gap: 16px; }
+
+    .install-step-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .step-badge {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: rgba(245,166,35,.1);
+      border: 1px solid rgba(245,166,35,.2);
+      color: var(--amber);
+      font-size: 11px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .step-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .step-text strong { color: var(--white); }
+
+    .code-snippet {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--amber);
+      word-break: break-all;
+      position: relative;
+    }
+
+    .snippet-label {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+      font-family: var(--font-mono);
+    }
+
+    .copy-inline {
+      position: absolute;
+      top: 10px; right: 10px;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      transition: all .15s;
+    }
+
+    .copy-inline:hover { border-color: var(--amber); color: var(--amber); }
+    .copy-inline.copied { color: var(--cyan); border-color: var(--cyan); }
+
+    .install-card-footer {
+      padding: 16px 28px;
+      border-top: 1px solid var(--border);
+      background: rgba(245,166,35,.03);
+    }
+
+    .ios-notice {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .ios-notice .badge-ios {
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--white);
+      white-space: nowrap;
+    }
+
+    /* Steps accordion side */
+    .shortcut-steps { display: flex; flex-direction: column; gap: 4px; }
+
+    .shortcut-step {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color .2s;
+    }
+
+    .shortcut-step:hover { border-color: rgba(245,166,35,.3); }
+    .shortcut-step.open  { border-color: rgba(245,166,35,.4); }
+
+    .shortcut-step-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 20px;
+      cursor: pointer;
+      user-select: none;
+      background: var(--card);
+      transition: background .2s;
+    }
+
+    .shortcut-step-header:hover { background: #1e1e23; }
+    .shortcut-step.open .shortcut-step-header { background: rgba(245,166,35,.05); }
+
+    .ss-num {
+      font-family: var(--font-display);
+      font-size: 32px;
+      color: var(--border);
+      line-height: 1;
+      min-width: 32px;
+      transition: color .2s;
+    }
+
+    .shortcut-step.open .ss-num { color: var(--amber); }
+
+    .ss-title { font-size: 15px; font-weight: 500; flex: 1; }
+    .ss-chevron { color: var(--muted); font-size: 12px; transition: transform .2s; }
+    .shortcut-step.open .ss-chevron { transform: rotate(180deg); color: var(--amber); }
+
+    .shortcut-step-body {
+      display: none;
+      padding: 0 20px 20px 66px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+      background: var(--card);
+    }
+
+    .shortcut-step.open .shortcut-step-body { display: block; }
+
+    .shortcut-step-body p + p { margin-top: 10px; }
+
+    .shortcut-step-body code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--amber);
+      background: rgba(245,166,35,.08);
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+
+    .ss-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: .5px;
+    }
+
+    .ss-tag-type { background: rgba(0,212,200,.1); color: var(--cyan); }
+    .ss-tag-method { background: rgba(245,166,35,.1); color: var(--amber); }
+
+    /* trigger chips */
+    .trigger-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+    .trigger-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+      transition: all .15s;
+    }
+
+    .trigger-chip:hover { border-color: var(--amber); color: var(--white); }
+
+    /* JSON preview */
+    .json-block {
+      margin-top: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      line-height: 1.8;
+    }
+
+    .json-key   { color: var(--cyan); }
+    .json-str   { color: #a8d8a8; }
+    .json-var   { color: var(--amber); }
+    .json-punct { color: var(--muted); }
+
+    /* ─── TECH ────────────────────────────────────────────── */
+    .tech-section {
+      padding: 80px 48px;
+      border-top: 1px solid var(--border);
+    }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 60px;
+    }
+
+    .tech-card { background: var(--card); padding: 32px 28px; transition: background .2s; }
+    .tech-card:hover { background: #1e1e23; }
+    .tech-card-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--amber); margin-bottom: 12px; }
+    .tech-card h4 { font-size: 18px; font-weight: 500; margin-bottom: 8px; }
+    .tech-card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    /* ─── CTA ─────────────────────────────────────────────── */
+    .cta-section {
+      padding: 120px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(245,166,35,.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-section h2 {
+      font-family: var(--font-display);
+      font-size: clamp(56px, 7vw, 100px);
+      line-height: .95;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .cta-section p { font-size: 17px; color: var(--muted); max-width: 480px; margin: 0 auto 44px; line-height: 1.7; }
+
+    .cta-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    .os-badges { display: flex; align-items: center; gap: 12px; margin-top: 24px; justify-content: center; }
+    .os-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); font-family: var(--font-mono); }
+    .os-sep { color: var(--border); }
+
+    /* ─── FOOTER ──────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-logo { font-family: var(--font-display); font-size: 20px; letter-spacing: 3px; color: var(--amber); }
+    .footer-logo span { color: rgba(240,237,232,.3); }
+    footer p { font-size: 12px; color: var(--muted); font-family: var(--font-mono); }
+
+    /* ─── SCROLL REVEAL ───────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);
+    }
+
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-delay-4 { transition-delay: .4s; }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+
+      .hero { grid-template-columns: 1fr; padding: 120px 24px 60px; text-align: center; }
+      .hero-eyebrow { justify-content: center; }
+      .hero-sub { margin: 0 auto 44px; }
+      .hero-actions { justify-content: center; }
+      .hero-visual { justify-content: center; margin-top: 60px; }
+      .hero-badge { left: 0; right: 0; bottom: -30px; width: fit-content; margin: auto; }
+      .hero::after { display: none; }
+
+      .section, .shortcut-section, .tech-section, .cta-section { padding: 80px 24px; }
+      footer { padding: 24px; flex-direction: column; gap: 12px; text-align: center; }
+
+      .steps { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+      .features-visual { display: none; }
+      .tech-grid { grid-template-columns: 1fr 1fr; }
+
+      .shortcut-grid { grid-template-columns: 1fr; }
+      .install-card { position: static; }
+    }
+
+    @media (max-width: 540px) {
+      .tech-grid { grid-template-columns: 1fr; }
+      .hero-title { font-size: 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <div class="nav-logo">OPEN<span>PASTE</span></div>
+    <ul class="nav-links">
+      <li><a href="#how">Como funciona</a></li>
+      <li><a href="#features">Recursos</a></li>
+      <li><a href="#shortcut">Atalho iOS</a></li>
+      <li><a href="#download" class="nav-cta">Download</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-eyebrow">iPhone → Windows</div>
+      <h1 class="hero-title">
+        <div>OPEN</div>
+        <div class="line-amber">PAS</div>
+        <div class="line-outline">TE</div>
+      </h1>
+      <p class="hero-sub">
+        Envie <strong>texto, links, imagens e arquivos</strong> do iPhone para o Windows em dois toques.
+        Sem conta, sem nuvem, sem complicação — só Wi-Fi.
+      </p>
+      <div class="hero-actions">
+        <a href="#download" class="btn-primary">↓ &nbsp;Download grátis</a>
+        <a href="#shortcut" class="btn-ghost">Instalar no iPhone →</a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="terminal">
+        <div class="terminal-bar">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yel"></div>
+          <div class="dot dot-grn"></div>
+          <div class="terminal-title">OpenPaste — servidor HTTP</div>
+        </div>
+        <div class="terminal-body">
+          <div><span class="t-muted">$</span> <span class="t-amber">./dev-launch.sh</span></div>
+          <div class="t-muted">Sincronizando fontes WSL → Windows…</div>
+          <div><span class="t-green">✓</span> <span class="t-white">Sync concluído</span></div>
+          <div class="t-muted">Instalando dependências…</div>
+          <div><span class="t-green">✓</span> <span class="t-white">npm install concluído</span></div>
+          <div>&nbsp;</div>
+          <div><span class="t-cyan">[mdns]</span> <span class="t-white">Anunciando <span class="t-amber">openpaste.local</span>:9876</span></div>
+          <div><span class="t-cyan">[server]</span> <span class="t-white">Listening on port <span class="t-amber">9876</span></span></div>
+          <div>&nbsp;</div>
+          <div><span class="t-green">POST</span> /clip <span class="t-dim">·</span> <span class="t-cyan">type=text</span></div>
+          <div><span class="t-green">✓</span> <span class="t-white">Copied to clipboard</span> <span class="t-muted">(42 chars)</span></div>
+          <div>&nbsp;</div>
+          <div><span class="t-green">POST</span> /clip <span class="t-dim">·</span> <span class="t-cyan">type=image</span></div>
+          <div><span class="t-green">✓</span> <span class="t-white">File saved</span> <span class="t-muted">foto.jpg</span><span class="cursor"></span></div>
+        </div>
+      </div>
+      <div class="hero-badge">
+        <strong>50MB</strong>limite por envio
+      </div>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker">
+    <div class="ticker-track">
+      <div class="ticker-item">texto <span class="sep">✦</span></div>
+      <div class="ticker-item">URLs <span class="sep">✦</span></div>
+      <div class="ticker-item">imagens <span class="sep">✦</span></div>
+      <div class="ticker-item">arquivos <span class="sep">✦</span></div>
+      <div class="ticker-item">PDFs <span class="sep">✦</span></div>
+      <div class="ticker-item">clipboard automático <span class="sep">✦</span></div>
+      <div class="ticker-item">mDNS / Bonjour <span class="sep">✦</span></div>
+      <div class="ticker-item">notificações nativas <span class="sep">✦</span></div>
+      <div class="ticker-item">texto <span class="sep">✦</span></div>
+      <div class="ticker-item">URLs <span class="sep">✦</span></div>
+      <div class="ticker-item">imagens <span class="sep">✦</span></div>
+      <div class="ticker-item">arquivos <span class="sep">✦</span></div>
+      <div class="ticker-item">PDFs <span class="sep">✦</span></div>
+      <div class="ticker-item">clipboard automático <span class="sep">✦</span></div>
+      <div class="ticker-item">mDNS / Bonjour <span class="sep">✦</span></div>
+      <div class="ticker-item">notificações nativas <span class="sep">✦</span></div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" id="how">
+    <div class="section-label"><span></span>Como funciona</div>
+    <h2 class="section-title">TRÊS<br><em>PASSOS.</em></h2>
+    <div class="steps">
+      <div class="step reveal">
+        <span class="step-num">01</span>
+        <span class="step-icon">🖥</span>
+        <h3>Abra o OpenPaste</h3>
+        <p>O app sobe no tray do Windows e anuncia <code style="font-family:var(--font-mono);font-size:11px;color:var(--amber)">openpaste.local</code> na rede Wi-Fi via Bonjour. Nenhuma configuração de IP necessária.</p>
+      </div>
+      <div class="step reveal reveal-delay-1">
+        <span class="step-num">02</span>
+        <span class="step-icon">📱</span>
+        <h3>Compartilhe no iPhone</h3>
+        <p>Toque em Compartilhar em qualquer app e escolha "Enviar para PC". Funciona com texto, links, fotos, PDFs e qualquer arquivo.</p>
+      </div>
+      <div class="step reveal reveal-delay-2">
+        <span class="step-num">03</span>
+        <span class="step-icon">⚡</span>
+        <h3>Pronto no Windows</h3>
+        <p>Texto e URLs vão direto para o clipboard. Imagens e arquivos são salvos na pasta de destino. Uma notificação confirma o recebimento.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section" id="features" style="padding-top:0;">
+    <div class="section-label"><span></span>Recursos</div>
+    <h2 class="section-title">TUDO<br>QUE <em>IMPORTA.</em></h2>
+    <div class="features-grid">
+      <div class="features-list">
+        <div class="feature-item reveal">
+          <div class="feature-icon">📋</div>
+          <div class="feature-text">
+            <h4>Clipboard automático</h4>
+            <p>Texto e URLs são colados diretamente na área de transferência do Windows. Só dar Ctrl+V.</p>
+          </div>
+        </div>
+        <div class="feature-item reveal reveal-delay-1">
+          <div class="feature-icon">🔍</div>
+          <div class="feature-text">
+            <h4>Descoberta automática</h4>
+            <p>mDNS/Bonjour anuncia <code style="font-family:var(--font-mono);font-size:11px;color:var(--amber)">openpaste.local</code> na rede. O iPhone acha o PC sem precisar de IP fixo.</p>
+          </div>
+        </div>
+        <div class="feature-item reveal reveal-delay-2">
+          <div class="feature-icon">🗂</div>
+          <div class="feature-text">
+            <h4>Arquivos organizados</h4>
+            <p>Imagens e arquivos salvos em pasta configurável. Nomes únicos gerados automaticamente.</p>
+          </div>
+        </div>
+        <div class="feature-item reveal reveal-delay-3">
+          <div class="feature-icon">🔔</div>
+          <div class="feature-text">
+            <h4>Notificações nativas</h4>
+            <p>Alerta do próprio Windows a cada recebimento. Clique para abrir o arquivo direto na pasta.</p>
+          </div>
+        </div>
+        <div class="feature-item reveal reveal-delay-4">
+          <div class="feature-icon">⚙️</div>
+          <div class="feature-text">
+            <h4>Roda no tray, invisível</h4>
+            <p>Zero janelas abertas. Inicia com o Windows se quiser. Interface só quando precisar.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="features-visual">
+        <div style="position:relative; display:flex; justify-content:center;">
+          <div class="phone-mockup">
+            <div class="phone-screen">
+              <div class="phone-notch"><div class="phone-notch-bar"></div></div>
+              <div class="phone-body">
+                <div class="share-sheet">
+                  <div class="share-title">Compartilhar via</div>
+                  <div class="share-apps">
+                    <div class="share-app">
+                      <div class="share-app-icon highlight">📋</div>
+                      <span>Enviar para PC</span>
+                    </div>
+                    <div class="share-app">
+                      <div class="share-app-icon dim">💬</div>
+                      <span>Mensagens</span>
+                    </div>
+                    <div class="share-app">
+                      <div class="share-app-icon dim">📧</div>
+                      <span>Mail</span>
+                    </div>
+                    <div class="share-app">
+                      <div class="share-app-icon dim">📝</div>
+                      <span>Notas</span>
+                    </div>
+                  </div>
+                  <div class="share-actions">
+                    <div class="share-action active">
+                      <span>📋</span><span>Enviar para PC</span>
+                    </div>
+                    <div class="share-action" style="color:var(--muted);">
+                      <span>🔗</span><span>Copiar link</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="notif">
+            <div class="notif-header"><div class="notif-dot"></div>OpenPaste</div>
+            <p>Copiado para clipboard!</p>
+            <small>https://github.com/…</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHORTCUT iOS -->
+  <section class="shortcut-section" id="shortcut">
+    <div class="section-label"><span></span>Atalho iOS</div>
+    <h2 class="section-title" style="margin-bottom:16px;">INSTALE<br>NO <em>iPHONE.</em></h2>
+    <p style="color:var(--muted);font-size:16px;max-width:520px;margin-bottom:64px;line-height:1.7;">
+      O Atalho iOS conecta o Share Sheet, Widget e Back Tap ao OpenPaste. Configure uma vez, use para sempre.
+    </p>
+
+    <div class="shortcut-grid">
+
+      <!-- Card fixo com instruções rápidas -->
+      <div class="install-card reveal">
+        <div class="install-card-header">
+          <div class="install-card-icon">📋</div>
+          <div>
+            <div class="install-card-title">Enviar para PC</div>
+            <div class="install-card-sub">Atalho iOS · OpenPaste</div>
+          </div>
+        </div>
+        <div class="install-card-body">
+          <div class="install-step-row">
+            <div class="step-badge">1</div>
+            <div class="step-text">Abra o app <strong>Atalhos</strong> no iPhone e toque em <strong>"+"</strong> para criar um novo atalho.</div>
+          </div>
+          <div class="install-step-row">
+            <div class="step-badge">2</div>
+            <div class="step-text">Em <strong>"Atalho recebe"</strong>, marque: Texto, URLs, Imagens, Arquivos e PDFs.</div>
+          </div>
+          <div class="install-step-row">
+            <div class="step-badge">3</div>
+            <div class="step-text">Adicione uma ação <strong>"Obter Conteúdo da URL"</strong> com o endpoint abaixo:</div>
+          </div>
+
+          <div>
+            <div class="snippet-label">URL do servidor</div>
+            <div class="code-snippet" id="endpointSnippet">
+              http://openpaste.local:9876/clip
+              <button class="copy-inline" onclick="copySnippet('endpointSnippet', this)">copiar</button>
+            </div>
+          </div>
+
+          <div>
+            <div class="snippet-label">Método + corpo JSON</div>
+            <div class="json-block">
+              <span class="json-punct">{</span><br>
+              &nbsp;&nbsp;<span class="json-key">"type"</span><span class="json-punct">:</span> <span class="json-var">[tipo detectado]</span><span class="json-punct">,</span><br>
+              &nbsp;&nbsp;<span class="json-key">"content"</span><span class="json-punct">:</span> <span class="json-var">[conteúdo ou base64]</span><span class="json-punct">,</span><br>
+              &nbsp;&nbsp;<span class="json-key">"filename"</span><span class="json-punct">:</span> <span class="json-var">[nome do arquivo]</span><br>
+              <span class="json-punct">}</span>
+            </div>
+          </div>
+
+          <div class="install-step-row">
+            <div class="step-badge">4</div>
+            <div class="step-text">Nomeie o atalho <strong>"Enviar para PC"</strong> e salve. Pronto.</div>
+          </div>
+        </div>
+        <div class="install-card-footer">
+          <div class="ios-notice">
+            <span class="badge-ios">iOS 13+</span>
+            <span>Requer app Atalhos (nativo no iOS 13 ou superior)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Steps detalhados em accordion -->
+      <div class="shortcut-steps">
+
+        <div class="shortcut-step open reveal">
+          <div class="shortcut-step-header" onclick="toggleStep(this)">
+            <span class="ss-num">01</span>
+            <span class="ss-title">Configure os tipos de entrada</span>
+            <span class="ss-chevron">▼</span>
+          </div>
+          <div class="shortcut-step-body">
+            <p>No topo do editor do Atalho, toque em <strong>"Atalho recebe"</strong> e habilite todos os tipos:</p>
+            <div class="trigger-chips" style="margin-top:10px;">
+              <div class="trigger-chip"><span class="ss-tag ss-tag-type">Texto</span></div>
+              <div class="trigger-chip"><span class="ss-tag ss-tag-type">URLs</span></div>
+              <div class="trigger-chip"><span class="ss-tag ss-tag-type">Imagens</span></div>
+              <div class="trigger-chip"><span class="ss-tag ss-tag-type">Arquivos</span></div>
+              <div class="trigger-chip"><span class="ss-tag ss-tag-type">PDFs</span></div>
+            </div>
+            <p style="margin-top:12px;">Deixe <strong>"Nenhuma entrada"</strong> desmarcado para poder disparar o atalho manualmente também (pega a área de transferência).</p>
+          </div>
+        </div>
+
+        <div class="shortcut-step reveal reveal-delay-1">
+          <div class="shortcut-step-header" onclick="toggleStep(this)">
+            <span class="ss-num">02</span>
+            <span class="ss-title">Detecte o tipo do conteúdo</span>
+            <span class="ss-chevron">▼</span>
+          </div>
+          <div class="shortcut-step-body">
+            <p>Adicione um bloco <strong>"Se"</strong> para identificar o tipo de entrada:</p>
+            <p>• Se a entrada <strong>for Imagem</strong> → encode em Base64 → <code>type = "image"</code></p>
+            <p>• Se <strong>for Arquivo/PDF</strong> → encode em Base64 → <code>type = "file"</code></p>
+            <p>• <strong>Senão</strong> → use como string → <code>type = "text"</code> ou <code>"url"</code></p>
+            <p style="margin-top:10px;">Dica: use a ação <strong>"Codificar em Base64"</strong> do iOS para imagens e arquivos antes de enviar.</p>
+          </div>
+        </div>
+
+        <div class="shortcut-step reveal reveal-delay-2">
+          <div class="shortcut-step-header" onclick="toggleStep(this)">
+            <span class="ss-num">03</span>
+            <span class="ss-title">Configure o request HTTP</span>
+            <span class="ss-chevron">▼</span>
+          </div>
+          <div class="shortcut-step-body">
+            <p>Adicione <strong>"Obter Conteúdo da URL"</strong> com as seguintes configurações:</p>
+            <div class="json-block" style="margin-top:10px;">
+              <span class="json-key">URL</span><span class="json-punct">:</span> <span class="json-str">http://openpaste.local:9876/clip</span><br>
+              <span class="json-key">Método</span><span class="json-punct">:</span> <span class="json-var">POST</span><br>
+              <span class="json-key">Content-Type</span><span class="json-punct">:</span> <span class="json-str">application/json</span><br>
+              <span class="json-key">Corpo</span><span class="json-punct">:</span> <span class="json-var">JSON</span>
+            </div>
+            <p style="margin-top:10px;">No campo <strong>corpo JSON</strong>, adicione as chaves <code>type</code>, <code>content</code> e <code>filename</code> apontando para as variáveis do Atalho.</p>
+          </div>
+        </div>
+
+        <div class="shortcut-step reveal reveal-delay-3">
+          <div class="shortcut-step-header" onclick="toggleStep(this)">
+            <span class="ss-num">04</span>
+            <span class="ss-title">Adicione feedback visual</span>
+            <span class="ss-chevron">▼</span>
+          </div>
+          <div class="shortcut-step-body">
+            <p>Após o request, adicione um <strong>"Se"</strong> verificando se o resultado contém <code>"ok":true</code>:</p>
+            <p>• <strong>Sim</strong> → "Mostrar Notificação" com <code>✓ Enviado para o PC</code></p>
+            <p>• <strong>Não</strong> → "Mostrar Alerta" com <code>Falha ao conectar. Verifique o OpenPaste.</code></p>
+          </div>
+        </div>
+
+        <div class="shortcut-step reveal reveal-delay-4">
+          <div class="shortcut-step-header" onclick="toggleStep(this)">
+            <span class="ss-num">05</span>
+            <span class="ss-title">Formas de disparar o atalho</span>
+            <span class="ss-chevron">▼</span>
+          </div>
+          <div class="shortcut-step-body">
+            <p>Depois de salvar, o atalho pode ser disparado de várias formas:</p>
+            <div class="trigger-chips">
+              <div class="trigger-chip">📤 Share Sheet</div>
+              <div class="trigger-chip">🔲 Widget</div>
+              <div class="trigger-chip">👆 Back Tap</div>
+              <div class="trigger-chip">🔘 Botão de Ação</div>
+            </div>
+            <p style="margin-top:12px;"><strong>Share Sheet (recomendado):</strong> botão Compartilhar em qualquer app → "Mais" → ative "Enviar para PC".</p>
+            <p><strong>Back Tap:</strong> Ajustes → Acessibilidade → Toque → Back Tap → selecione o atalho.</p>
+            <p><strong>Botão de Ação</strong> (iPhone 15 Pro / 16): Ajustes → Botão de Ação → Atalho → "Enviar para PC".</p>
+          </div>
+        </div>
+
+        <div class="shortcut-step reveal" style="border-color:rgba(245,166,35,.2);">
+          <div class="shortcut-step-header" onclick="toggleStep(this)" style="background:rgba(245,166,35,.03);">
+            <span class="ss-num" style="color:var(--amber-dim);">⚠</span>
+            <span class="ss-title">Se o mDNS não funcionar</span>
+            <span class="ss-chevron">▼</span>
+          </div>
+          <div class="shortcut-step-body">
+            <p>Alguns roteadores bloqueiam mDNS entre dispositivos. Nesse caso, substitua <code>openpaste.local</code> pelo IP local do PC.</p>
+            <p style="margin-top:8px;">O IP aparece na aba <strong>Rede</strong> nas Configurações do OpenPaste (janela do app Windows).</p>
+            <div class="code-snippet" style="margin-top:10px;" id="ipFallback">
+              http://192.168.1.X:9876/clip
+              <button class="copy-inline" onclick="copySnippet('ipFallback', this)">copiar</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- TECH -->
+  <section class="tech-section" id="tech">
+    <div class="section-label"><span></span>Tecnologia</div>
+    <h2 class="section-title" style="font-size:clamp(40px,5vw,72px);margin-bottom:0;">STACK <em>OPEN SOURCE.</em></h2>
+    <div class="tech-grid">
+      <div class="tech-card reveal">
+        <div class="tech-card-label">Runtime</div>
+        <h4>Electron</h4>
+        <p>App nativo Windows com tray, notificações e acesso ao clipboard do sistema.</p>
+      </div>
+      <div class="tech-card reveal reveal-delay-1">
+        <div class="tech-card-label">Servidor</div>
+        <h4>Express.js</h4>
+        <p>HTTP server leve escutando na rede local. Limite de 50 MB por payload.</p>
+      </div>
+      <div class="tech-card reveal reveal-delay-2">
+        <div class="tech-card-label">Descoberta</div>
+        <h4>Bonjour / mDNS</h4>
+        <p>O PC anuncia <code style="font-family:var(--font-mono);font-size:11px;color:var(--amber)">openpaste.local</code> automaticamente. Nenhum IP para lembrar.</p>
+      </div>
+      <div class="tech-card reveal reveal-delay-3">
+        <div class="tech-card-label">iPhone</div>
+        <h4>Atalhos iOS</h4>
+        <p>Atalho nativo dispara pelo Share Sheet, Widget, Back Tap ou Botão de Ação.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section" id="download">
+    <div class="cta-bg"></div>
+    <h2>BAIXE<br><span style="color:var(--amber)">GRÁTIS.</span></h2>
+    <p>Código aberto, sem telemetria, sem conta. Seus dados ficam na sua rede.</p>
+    <div class="cta-actions">
+      <a href="#" class="btn-primary" style="font-size:15px;padding:16px 32px;">↓ &nbsp;Download para Windows</a>
+      <a href="https://github.com" class="btn-ghost" target="_blank">Ver no GitHub →</a>
+    </div>
+    <div class="os-badges">
+      <div class="os-badge">🪟 Windows 10 / 11</div>
+      <span class="os-sep">·</span>
+      <div class="os-badge">📱 iOS 13+</div>
+      <span class="os-sep">·</span>
+      <div class="os-badge">✦ Wi-Fi LAN</div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">OPEN<span>PASTE</span></div>
+    <p>MIT License · Electron + iOS Shortcuts · open source</p>
+  </footer>
+
+  <script>
+    // ── Nav scroll ────────────────────────────────────────────
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // ── Scroll reveal ─────────────────────────────────────────
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ── Accordion ─────────────────────────────────────────────
+    function toggleStep(header) {
+      const step = header.closest('.shortcut-step');
+      const isOpen = step.classList.contains('open');
+      // fechar todos
+      document.querySelectorAll('.shortcut-step.open').forEach(s => s.classList.remove('open'));
+      if (!isOpen) step.classList.add('open');
+    }
+
+    // ── Copy snippets ─────────────────────────────────────────
+    function copySnippet(id, btn) {
+      const el = document.getElementById(id);
+      const text = el.childNodes[0].textContent.trim();
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'copiado!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'copiar'; btn.classList.remove('copied'); }, 2000);
+      }).catch(() => {});
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6c63ff"/>
+      <stop offset="100%" stop-color="#00e5a0"/>
+    </linearGradient>
+    <linearGradient id="arrow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect width="256" height="256" rx="56" ry="56" fill="url(#bg)"/>
+
+  <!-- Clipboard body -->
+  <rect x="72" y="80" width="112" height="136" rx="12" ry="12"
+        fill="none" stroke="white" stroke-width="10" stroke-opacity="0.9"/>
+
+  <!-- Clipboard clip at top -->
+  <rect x="104" y="62" width="48" height="28" rx="8" ry="8"
+        fill="url(#bg)" stroke="white" stroke-width="8"/>
+
+  <!-- Arrow pointing right (send) -->
+  <line x1="92" y1="148" x2="148" y2="148"
+        stroke="white" stroke-width="10" stroke-linecap="round"/>
+  <polyline points="136,134 152,148 136,162"
+            fill="none" stroke="white" stroke-width="10"
+            stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Lines suggesting content -->
+  <line x1="92" y1="120" x2="164" y2="120"
+        stroke="white" stroke-width="7" stroke-linecap="round" stroke-opacity="0.5"/>
+  <line x1="92" y1="178" x2="140" y2="178"
+        stroke="white" stroke-width="7" stroke-linecap="round" stroke-opacity="0.5"/>
+</svg>

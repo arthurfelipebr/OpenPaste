@@ -1,0 +1,197 @@
+'use strict';
+
+// ── Estado ───────────────────────────────────────────────
+let currentConfig = {};
+
+// ── Init ─────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  await loadConfig();
+  await loadHistory();
+
+  // Escutar atualizações em tempo real do main process
+  window.openPaste.onHistoryUpdate((history) => {
+    renderHistory(history);
+  });
+});
+
+// ── Carregar configuração ────────────────────────────────
+async function loadConfig() {
+  try {
+    const config = await window.openPaste.getConfig();
+    currentConfig = config;
+    applyConfig(config);
+  } catch (err) {
+    console.error('[settings] Erro ao carregar config:', err);
+  }
+}
+
+function applyConfig(config) {
+  document.getElementById('portInput').value = config.port ?? 9876;
+  document.getElementById('downloadPath').value = config.downloadPath ?? '';
+  document.getElementById('autoLaunchToggle').checked = config.autoLaunch ?? false;
+
+  updateServerStatus(config.isServerRunning);
+  updateNetInfo(config.localIP, config.port);
+}
+
+function updateServerStatus(running) {
+  const pill   = document.getElementById('statusPill');
+  const label  = document.getElementById('statusLabel');
+  const btn    = document.getElementById('toggleServerBtn');
+  const sub    = document.getElementById('serverSubtitle');
+
+  if (running) {
+    pill.classList.remove('offline');
+    label.textContent = 'Rodando';
+    btn.textContent   = 'Parar';
+    btn.className     = 'btn btn-danger';
+    sub.textContent   = `Porta ${currentConfig.port ?? 9876} • aguardando conexões`;
+  } else {
+    pill.classList.add('offline');
+    label.textContent = 'Parado';
+    btn.textContent   = 'Iniciar';
+    btn.className     = 'btn btn-ghost';
+    sub.textContent   = 'Servidor não está rodando';
+  }
+}
+
+function updateNetInfo(ip, port) {
+  const ipEl  = document.getElementById('localIP');
+  const urlEl = document.getElementById('fullUrl');
+
+  // Preservar o botão de cópia já existente
+  const copyIP  = ipEl.querySelector('button');
+  const copyURL = urlEl.querySelector('button');
+
+  ipEl.textContent  = ip ?? '—';
+  urlEl.textContent = ip ? `http://${ip}:${port}/clip` : '—';
+
+  if (copyIP)  ipEl.appendChild(copyIP);
+  if (copyURL) urlEl.appendChild(copyURL);
+}
+
+// ── Salvar configuração ──────────────────────────────────
+async function saveConfig() {
+  const newConfig = {
+    port:         parseInt(document.getElementById('portInput').value, 10),
+    downloadPath: document.getElementById('downloadPath').value,
+    autoLaunch:   document.getElementById('autoLaunchToggle').checked,
+  };
+
+  if (!newConfig.port || newConfig.port < 1024 || newConfig.port > 65535) {
+    showFeedback('Porta inválida (1024–65535)', true);
+    return;
+  }
+
+  try {
+    await window.openPaste.saveConfig(newConfig);
+    currentConfig = { ...currentConfig, ...newConfig };
+    updateNetInfo(currentConfig.localIP, newConfig.port);
+    showFeedback('✓ Configurações salvas');
+    // Reload para refletir estado do servidor após possível restart
+    await loadConfig();
+  } catch (err) {
+    showFeedback('Erro ao salvar', true);
+    console.error(err);
+  }
+}
+
+function showFeedback(msg, isError = false) {
+  const el = document.getElementById('saveFeedback');
+  el.textContent = msg;
+  el.style.color = isError ? 'var(--danger)' : 'var(--accent2)';
+  el.classList.add('visible');
+  setTimeout(() => el.classList.remove('visible'), 2500);
+}
+
+// ── Toggle servidor ──────────────────────────────────────
+async function toggleServer() {
+  const btn = document.getElementById('toggleServerBtn');
+  btn.disabled = true;
+  btn.textContent = '…';
+
+  try {
+    const result = await window.openPaste.toggleServer();
+    currentConfig.isServerRunning = result.isServerRunning;
+    updateServerStatus(result.isServerRunning);
+  } catch (err) {
+    console.error('[settings] Erro ao alternar servidor:', err);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ── Seleção de pasta ─────────────────────────────────────
+async function pickFolder() {
+  const selected = await window.openPaste.pickFolder();
+  if (selected) {
+    document.getElementById('downloadPath').value = selected;
+  }
+}
+
+function openFolder() {
+  window.openPaste.openFolder();
+}
+
+// ── Histórico ────────────────────────────────────────────
+async function loadHistory() {
+  try {
+    const history = await window.openPaste.getHistory();
+    renderHistory(history);
+  } catch {
+    // silencioso
+  }
+}
+
+function renderHistory(history) {
+  const list = document.getElementById('historyList');
+  const badge = document.getElementById('historyCount');
+
+  badge.textContent = `${history.length} ite${history.length === 1 ? 'm' : 'ns'}`;
+
+  if (!history.length) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <span>Nenhum item recebido ainda</span>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = history.map((item) => {
+    const typeClass = `type-${item.type}`;
+    const time = formatTime(item.at);
+    const preview = escapeHTML(item.preview ?? '');
+
+    return `
+      <div class="history-item">
+        <span class="type-badge ${typeClass}">${item.type}</span>
+        <span class="history-preview" title="${preview}">${preview}</span>
+        <span class="history-time">${time}</span>
+      </div>`;
+  }).join('');
+}
+
+// ── Utilitários ───────────────────────────────────────────
+function copyValue(elementId) {
+  const el = document.getElementById(elementId);
+  const text = el.childNodes[0]?.textContent?.trim() ?? el.textContent.trim();
+  copyText(text);
+}
+
+function copyText(text) {
+  if (!text || text === '—') return;
+  navigator.clipboard.writeText(text).then(() => {
+    showFeedback('✓ Copiado!');
+  }).catch(() => {});
+}
+
+function formatTime(isoString) {
+  if (!isoString) return '';
+  const d = new Date(isoString);
+  return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
+function escapeHTML(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
