@@ -50,7 +50,6 @@
         }
       ],
       "icon": "assets/icon.ico",
-      "publisherName": "Arthur Felipe",
       "verifyUpdateCodeSignature": false
     },
     "nsis": {

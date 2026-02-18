@@ -37,9 +37,7 @@ jobs:
       # ── 4. Build NSIS + Portable ────────────────────────────
       - name: Build installer
         working-directory: electron
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run build
+        run: npm run build -- --publish never
 
       # ── 5. Listar artefatos gerados ──────────────────────────
       - name: List dist artifacts
