@@ -4,7 +4,7 @@
   "description": "Bridge iPhone → Windows: clipboard e arquivos em segundos.",
   "main": "main.js",
   "author": "OpenPaste",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",

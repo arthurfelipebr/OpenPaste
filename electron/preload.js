@@ -25,6 +25,21 @@ contextBridge.exposeInMainWorld('openPaste', {
   /** Abre dialog para escolher pasta; retorna o caminho ou null */
   pickFolder: () => ipcRenderer.invoke('pick-folder'),
 
+  /** Retorna o locale atual ('en' ou 'pt-BR') */
+  getLocale: () => ipcRenderer.invoke('get-locale'),
+
+  /** Define o locale; persiste em electron-store */
+  setLocale: (lang) => ipcRenderer.invoke('set-locale', lang),
+
+  /** Retorna o catálogo completo de strings para um locale */
+  getStrings: (lang) => ipcRenderer.invoke('get-strings', lang),
+
+  /** Retorna info do servidor (port, localIP, isServerRunning) */
+  getServerInfo: () => ipcRenderer.invoke('get-server-info'),
+
+  /** Marca onboarding como concluído; abre janela de settings */
+  onboardingDone: () => ipcRenderer.invoke('onboarding-done'),
+
   /** Escuta atualizações de histórico em tempo real */
   onHistoryUpdate: (callback) => {
     ipcRenderer.on('history-update', (_event, history) => callback(history));

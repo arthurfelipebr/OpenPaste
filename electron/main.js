@@ -28,8 +28,10 @@ if (!app.requestSingleInstanceLock()) {
 let Store, AutoLaunch;
 let store, autoLaunch;
 let server, mdns;
+let i18n;
 let tray = null;
 let settingsWindow = null;
+let onboardingWindow = null;
 let isServerRunning = false;
 
 // -------------------------------------------------------
@@ -42,12 +44,15 @@ app.whenReady().then(async () => {
   // Carregar dependências (ESM-safe)
   Store = require('electron-store');
   AutoLaunch = require('auto-launch');
+  i18n = require('./i18n');
 
   store = new Store({
     defaults: {
       port: 9876,
       downloadPath: path.join(os.homedir(), 'Downloads', 'OpenPaste'),
       autoLaunch: false,
+      locale: 'en',
+      onboardingDone: false,
     },
   });
 
@@ -59,18 +64,41 @@ app.whenReady().then(async () => {
 
   setupTray();
   await startServer();
+
+  // Primeira execução → onboarding; caso contrário → settings
+  if (!store.get('onboardingDone')) {
+    openOnboarding();
+  } else {
+    openSettings();
+  }
 });
 
-// Segunda instância → focar janela de settings se aberta
+// Segunda instância → focar janela aberta
 app.on('second-instance', () => {
-  if (settingsWindow) {
+  if (onboardingWindow) {
+    if (onboardingWindow.isMinimized()) onboardingWindow.restore();
+    onboardingWindow.focus();
+  } else if (settingsWindow) {
     if (settingsWindow.isMinimized()) settingsWindow.restore();
     settingsWindow.focus();
+  } else {
+    openSettings();
   }
 });
 
 // Manter o app rodando mesmo sem janelas abertas
 app.on('window-all-closed', (e) => e.preventDefault());
+
+// -------------------------------------------------------
+// Helper: locale atual
+// -------------------------------------------------------
+function locale() {
+  return store ? store.get('locale', 'en') : 'en';
+}
+
+function tr(key, vars) {
+  return i18n ? i18n.t(locale(), key, vars) : key;
+}
 
 // -------------------------------------------------------
 // Tray
@@ -80,7 +108,7 @@ function setupTray() {
   const icon = nativeImage.createFromPath(iconPath);
 
   tray = new Tray(icon.isEmpty() ? nativeImage.createEmpty() : icon);
-  tray.setToolTip('OpenPaste — aguardando do iPhone…');
+  tray.setToolTip(tr('trayTooltipWaiting'));
   tray.on('double-click', openSettings);
 
   rebuildMenu();
@@ -96,20 +124,20 @@ function rebuildMenu() {
     },
     { type: 'separator' },
     {
-      label: isServerRunning ? '● Rodando' : '○ Parado',
+      label: isServerRunning ? tr('trayRunning') : tr('trayStopped'),
       enabled: false,
     },
     {
-      label: isServerRunning ? 'Parar servidor' : 'Iniciar servidor',
+      label: isServerRunning ? tr('trayStopServer') : tr('trayStartServer'),
       click: () => (isServerRunning ? stopServer() : startServer()),
     },
     { type: 'separator' },
     {
-      label: 'Configurações…',
+      label: tr('traySettings'),
       click: openSettings,
     },
     {
-      label: 'Abrir pasta de downloads',
+      label: tr('trayOpenFolder'),
       click: () => {
         const dir = store.get('downloadPath');
         fs.mkdirSync(dir, { recursive: true });
@@ -118,7 +146,7 @@ function rebuildMenu() {
     },
     { type: 'separator' },
     {
-      label: 'Sair',
+      label: tr('trayQuit'),
       click: async () => {
         await stopServer();
         app.exit(0);
@@ -127,6 +155,38 @@ function rebuildMenu() {
   ]);
 
   tray.setContextMenu(menu);
+}
+
+// -------------------------------------------------------
+// Janela de onboarding (primeira execução)
+// -------------------------------------------------------
+function openOnboarding() {
+  if (onboardingWindow) {
+    onboardingWindow.focus();
+    return;
+  }
+
+  onboardingWindow = new BrowserWindow({
+    width: 620,
+    height: 520,
+    resizable: false,
+    title: 'OpenPaste',
+    icon: path.join(__dirname, 'assets', 'icon.png'),
+    autoHideMenuBar: true,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
+  });
+
+  onboardingWindow.loadFile(
+    path.join(__dirname, 'renderer', 'onboarding', 'index.html')
+  );
+
+  onboardingWindow.on('closed', () => {
+    onboardingWindow = null;
+  });
 }
 
 // -------------------------------------------------------
@@ -142,7 +202,7 @@ function openSettings() {
     width: 560,
     height: 620,
     resizable: false,
-    title: 'OpenPaste — Configurações',
+    title: tr('settingsTitle'),
     icon: path.join(__dirname, 'assets', 'icon.png'),
     autoHideMenuBar: true,
     webPreferences: {
@@ -188,13 +248,13 @@ async function startServer() {
     await mdns.advertise(port);
 
     isServerRunning = true;
-    tray?.setToolTip(`OpenPaste — escutando :${port}`);
+    tray?.setToolTip(tr('trayTooltipRunning', { port }));
     rebuildMenu();
 
-    console.log(`[main] Servidor iniciado na porta ${port}`);
+    console.log(`[main] Server started on port ${port}`);
   } catch (err) {
-    console.error('[main] Falha ao iniciar servidor:', err);
-    notify('OpenPaste — Erro', `Não foi possível iniciar o servidor: ${err.message}`);
+    console.error('[main] Failed to start server:', err);
+    notify(tr('notifErrorTitle'), tr('notifErrorBody', { message: err.message }));
   }
 }
 
@@ -205,11 +265,11 @@ async function stopServer() {
     await serverInstance.get()?.stop();
     await mdns.stop();
     isServerRunning = false;
-    tray?.setToolTip('OpenPaste — parado');
+    tray?.setToolTip(tr('trayTooltipStopped'));
     rebuildMenu();
-    console.log('[main] Servidor parado');
+    console.log('[main] Server stopped');
   } catch (err) {
-    console.error('[main] Erro ao parar servidor:', err);
+    console.error('[main] Error stopping server:', err);
   }
 }
 
@@ -219,12 +279,12 @@ async function stopServer() {
 function handlePayload({ type, content, filename, filePath }) {
   if (type === 'text' || type === 'url') {
     notify(
-      'OpenPaste — Copiado!',
+      tr('notifCopied'),
       content.length > 80 ? content.slice(0, 80) + '…' : content
     );
   } else {
     const notif = notify(
-      `OpenPaste — ${type === 'image' ? 'Imagem' : 'Arquivo'} recebido`,
+      type === 'image' ? tr('notifImageReceived') : tr('notifFileReceived'),
       filename || path.basename(filePath),
       filePath
     );
@@ -316,9 +376,9 @@ ipcMain.handle('open-folder', () => {
 
 ipcMain.handle('pick-folder', async () => {
   const { dialog } = require('electron');
-  const result = await dialog.showOpenDialog(settingsWindow, {
+  const win = settingsWindow || onboardingWindow;
+  const result = await dialog.showOpenDialog(win, {
     properties: ['openDirectory'],
-    title: 'Escolher pasta de downloads',
     defaultPath: store.get('downloadPath'),
   });
   if (!result.canceled && result.filePaths.length > 0) {
@@ -326,3 +386,42 @@ ipcMain.handle('pick-folder', async () => {
   }
   return null;
 });
+
+// -------------------------------------------------------
+// IPC — i18n
+// -------------------------------------------------------
+ipcMain.handle('get-locale', () => store.get('locale', 'en'));
+
+ipcMain.handle('set-locale', (_event, lang) => {
+  if (!['en', 'pt-BR'].includes(lang)) return;
+  store.set('locale', lang);
+  // Rebuild tray with new locale
+  rebuildMenu();
+  tray?.setToolTip(
+    isServerRunning
+      ? tr('trayTooltipRunning', { port: store.get('port') })
+      : tr('trayTooltipWaiting')
+  );
+});
+
+ipcMain.handle('get-strings', (_event, loc) => {
+  const { strings } = require('./i18n');
+  return strings[loc] || strings['en'];
+});
+
+// -------------------------------------------------------
+// IPC — onboarding
+// -------------------------------------------------------
+ipcMain.handle('onboarding-done', () => {
+  store.set('onboardingDone', true);
+  if (onboardingWindow) {
+    onboardingWindow.close();
+  }
+  openSettings();
+});
+
+ipcMain.handle('get-server-info', () => ({
+  port: store.get('port'),
+  localIP: mdns.getLocalIP(),
+  isServerRunning,
+}));

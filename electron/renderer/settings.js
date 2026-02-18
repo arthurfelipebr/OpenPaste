@@ -2,9 +2,17 @@
 
 // ── Estado ───────────────────────────────────────────────
 let currentConfig = {};
+let currentLocale = 'en';
+let strings = {};
 
 // ── Init ─────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
+  // Carregar locale e strings primeiro
+  currentLocale = await window.openPaste.getLocale();
+  strings = await window.openPaste.getStrings(currentLocale);
+  applyI18n();
+  updateLangButtons();
+
   await loadConfig();
   await loadHistory();
 
@@ -14,6 +22,57 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 });
 
+// ── i18n ─────────────────────────────────────────────────
+function t(key, vars) {
+  let str = strings[key] || key;
+  if (vars) {
+    Object.keys(vars).forEach((k) => {
+      str = str.replace(`{${k}}`, vars[k]);
+    });
+  }
+  return str;
+}
+
+function applyI18n() {
+  // Elementos com data-i18n (textContent)
+  document.querySelectorAll('[data-i18n]').forEach((el) => {
+    const key = el.getAttribute('data-i18n');
+    el.textContent = t(key);
+  });
+  // Elementos com data-i18n-html (innerHTML — para tags <strong> etc)
+  document.querySelectorAll('[data-i18n-html]').forEach((el) => {
+    const key = el.getAttribute('data-i18n-html');
+    el.innerHTML = t(key);
+  });
+  // Atualizar título da janela
+  document.title = t('settingsTitle');
+  // Re-aplicar status se já tiver config
+  if (currentConfig && Object.keys(currentConfig).length) {
+    updateServerStatus(currentConfig.isServerRunning);
+    updateHistoryBadge(
+      document.getElementById('historyList')?.querySelectorAll('.history-item').length ?? 0
+    );
+  }
+}
+
+async function switchLang(lang) {
+  if (lang === currentLocale) return;
+  await window.openPaste.setLocale(lang);
+  currentLocale = lang;
+  strings = await window.openPaste.getStrings(lang);
+  applyI18n();
+  updateLangButtons();
+  // Reload config to re-apply dynamic strings
+  if (currentConfig && Object.keys(currentConfig).length) {
+    updateServerStatus(currentConfig.isServerRunning);
+  }
+}
+
+function updateLangButtons() {
+  document.getElementById('langEn').classList.toggle('active', currentLocale === 'en');
+  document.getElementById('langPt').classList.toggle('active', currentLocale === 'pt-BR');
+}
+
 // ── Carregar configuração ────────────────────────────────
 async function loadConfig() {
   try {
@@ -21,7 +80,7 @@ async function loadConfig() {
     currentConfig = config;
     applyConfig(config);
   } catch (err) {
-    console.error('[settings] Erro ao carregar config:', err);
+    console.error('[settings] Error loading config:', err);
   }
 }
 
@@ -42,16 +101,16 @@ function updateServerStatus(running) {
 
   if (running) {
     pill.classList.remove('offline');
-    label.textContent = 'Rodando';
-    btn.textContent   = 'Parar';
+    label.textContent = t('statusRunning');
+    btn.textContent   = t('btnStopServer');
     btn.className     = 'btn btn-danger';
-    sub.textContent   = `Porta ${currentConfig.port ?? 9876} • aguardando conexões`;
+    sub.textContent   = t('serverSubRunning', { port: currentConfig.port ?? 9876 });
   } else {
     pill.classList.add('offline');
-    label.textContent = 'Parado';
-    btn.textContent   = 'Iniciar';
+    label.textContent = t('statusStopped');
+    btn.textContent   = t('btnStartServer');
     btn.className     = 'btn btn-ghost';
-    sub.textContent   = 'Servidor não está rodando';
+    sub.textContent   = t('serverSubStopped');
   }
 }
 
@@ -79,7 +138,7 @@ async function saveConfig() {
   };
 
   if (!newConfig.port || newConfig.port < 1024 || newConfig.port > 65535) {
-    showFeedback('Porta inválida (1024–65535)', true);
+    showFeedback(t('feedbackInvalidPort'), true);
     return;
   }
 
@@ -87,11 +146,11 @@ async function saveConfig() {
     await window.openPaste.saveConfig(newConfig);
     currentConfig = { ...currentConfig, ...newConfig };
     updateNetInfo(currentConfig.localIP, newConfig.port);
-    showFeedback('✓ Configurações salvas');
+    showFeedback(t('feedbackSaved'));
     // Reload para refletir estado do servidor após possível restart
     await loadConfig();
   } catch (err) {
-    showFeedback('Erro ao salvar', true);
+    showFeedback(t('feedbackError'), true);
     console.error(err);
   }
 }
@@ -115,7 +174,7 @@ async function toggleServer() {
     currentConfig.isServerRunning = result.isServerRunning;
     updateServerStatus(result.isServerRunning);
   } catch (err) {
-    console.error('[settings] Erro ao alternar servidor:', err);
+    console.error('[settings] Error toggling server:', err);
   } finally {
     btn.disabled = false;
   }
@@ -143,17 +202,22 @@ async function loadHistory() {
   }
 }
 
+function updateHistoryBadge(count) {
+  const badge = document.getElementById('historyCount');
+  if (!badge) return;
+  const key = count === 1 ? 'historyItems' : 'historyItemsPlural';
+  badge.textContent = t(key, { n: count });
+}
+
 function renderHistory(history) {
   const list = document.getElementById('historyList');
-  const badge = document.getElementById('historyCount');
-
-  badge.textContent = `${history.length} ite${history.length === 1 ? 'm' : 'ns'}`;
+  updateHistoryBadge(history.length);
 
   if (!history.length) {
     list.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">📭</div>
-        <span>Nenhum item recebido ainda</span>
+        <span>${t('historyEmpty')}</span>
       </div>`;
     return;
   }
@@ -182,14 +246,15 @@ function copyValue(elementId) {
 function copyText(text) {
   if (!text || text === '—') return;
   navigator.clipboard.writeText(text).then(() => {
-    showFeedback('✓ Copiado!');
+    showFeedback(t('feedbackCopied'));
   }).catch(() => {});
 }
 
 function formatTime(isoString) {
   if (!isoString) return '';
   const d = new Date(isoString);
-  return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const loc = currentLocale === 'pt-BR' ? 'pt-BR' : 'en-US';
+  return d.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 }
 
 function escapeHTML(str) {

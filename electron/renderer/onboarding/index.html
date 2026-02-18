@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenPaste</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0d0f14;
+      --surface: #151820;
+      --card:    #1c2030;
+      --border:  #252a3a;
+      --accent:  #6c63ff;
+      --accent2: #00e5a0;
+      --danger:  #ff4f6a;
+      --text:    #e8eaf0;
+      --muted:   #6b728a;
+      --font:    'Space Grotesk', sans-serif;
+      --mono:    'JetBrains Mono', monospace;
+      --glow:    0 0 24px rgba(108,99,255,.25);
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.5;
+      overflow: hidden;
+    }
+
+    /* ── Shell ──────────────────────────────────────────── */
+    .shell {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* ── Header ─────────────────────────────────────────── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 52px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      -webkit-app-region: drag;
+      flex-shrink: 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-mark {
+      width: 26px; height: 26px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+    }
+
+    .logo-text {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -.3px;
+    }
+
+    .logo-text span { color: var(--accent); }
+
+    /* Lang switcher in header */
+    .lang-switcher {
+      display: flex;
+      gap: 4px;
+      -webkit-app-region: no-drag;
+    }
+
+    .lang-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all .15s;
+      letter-spacing: .5px;
+    }
+
+    .lang-btn:hover { border-color: var(--accent); color: var(--text); }
+    .lang-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(108,99,255,.1); }
+
+    /* ── Progress dots ──────────────────────────────────── */
+    .progress {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      padding: 16px 0 12px;
+      flex-shrink: 0;
+    }
+
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: all .3s;
+    }
+
+    .dot.active {
+      background: var(--accent);
+      width: 20px;
+      border-radius: 3px;
+    }
+
+    .dot.done { background: var(--accent2); }
+
+    /* ── Steps container ────────────────────────────────── */
+    .steps-wrapper {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .step {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 36px;
+      text-align: center;
+      opacity: 0;
+      transform: translateX(40px);
+      transition: opacity .3s ease, transform .3s ease;
+      pointer-events: none;
+    }
+
+    .step.active {
+      opacity: 1;
+      transform: none;
+      pointer-events: all;
+    }
+
+    .step.exit {
+      opacity: 0;
+      transform: translateX(-40px);
+    }
+
+    .step-icon {
+      font-size: 52px;
+      margin-bottom: 20px;
+      line-height: 1;
+    }
+
+    .step-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -.5px;
+      margin-bottom: 8px;
+    }
+
+    .step-subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 400px;
+      line-height: 1.65;
+    }
+
+    /* ── How-it-works step ──────────────────────────────── */
+    .how-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 420px;
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    .how-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .how-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      background: rgba(108,99,255,.1);
+      border: 1px solid rgba(108,99,255,.2);
+      border-radius: 4px;
+      padding: 2px 7px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .how-text h4 { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .how-text p { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+    /* ── Network step ───────────────────────────────────── */
+    .net-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      max-width: 380px;
+      margin-top: 20px;
+    }
+
+    .net-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .net-label { font-size: 12px; color: var(--muted); }
+    .net-value {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent2);
+    }
+
+    .server-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(0,229,160,.08);
+      border: 1px solid rgba(0,229,160,.2);
+      color: var(--accent2);
+      margin-bottom: 16px;
+    }
+
+    .status-dot-sm {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.3; } }
+
+    /* ── Shortcut step ──────────────────────────────────── */
+    .shortcut-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      max-width: 420px;
+      margin-top: 16px;
+      text-align: left;
+    }
+
+    .shortcut-step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .shortcut-step-item strong { color: var(--text); }
+
+    .step-badge {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: rgba(108,99,255,.1);
+      border: 1px solid rgba(108,99,255,.2);
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .endpoint-box {
+      width: 100%;
+      max-width: 380px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent2);
+      margin-top: 8px;
+      text-align: left;
+    }
+
+    .endpoint-label {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      font-family: var(--mono);
+    }
+
+    /* ── Language picker (step 1) ───────────────────────── */
+    .lang-picker {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .lang-option {
+      flex: 1;
+      padding: 14px 16px;
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: center;
+      transition: all .2s;
+      font-family: var(--font);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .lang-option:hover { border-color: var(--accent); }
+    .lang-option.selected {
+      border-color: var(--accent);
+      background: rgba(108,99,255,.08);
+      color: var(--accent);
+    }
+
+    .lang-option .flag { font-size: 24px; display: block; margin-bottom: 6px; }
+
+    /* ── Footer nav ─────────────────────────────────────── */
+    .nav-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+
+    .btn {
+      padding: 9px 20px;
+      border-radius: 8px;
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all .15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .btn-ghost:hover:not(:disabled) {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: var(--glow);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #7c74ff;
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active { transform: translateY(0); }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <div class="logo-mark">📎</div>
+      <div class="logo-text">Open<span>Paste</span></div>
+    </div>
+    <div class="lang-switcher">
+      <button class="lang-btn" id="langEn" onclick="pickLang('en')">EN</button>
+      <button class="lang-btn" id="langPt" onclick="pickLang('pt-BR')">PT</button>
+    </div>
+  </header>
+
+  <!-- Progress -->
+  <div class="progress" id="progress">
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+
+  <!-- Steps -->
+  <div class="steps-wrapper">
+
+    <!-- Step 1: Welcome + language -->
+    <div class="step active" id="step-0">
+      <div class="step-icon">👋</div>
+      <div class="step-title" data-i18n="onboardStep1Title">Welcome to OpenPaste</div>
+      <div class="step-subtitle" data-i18n="onboardStep1Sub">Send anything from iPhone to Windows in two taps.</div>
+      <div class="lang-picker">
+        <button class="lang-option selected" id="optEn" onclick="pickLang('en')">
+          <span class="flag">🇺🇸</span>English
+        </button>
+        <button class="lang-option" id="optPt" onclick="pickLang('pt-BR')">
+          <span class="flag">🇧🇷</span>Português
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2: How it works -->
+    <div class="step" id="step-1">
+      <div class="step-title" data-i18n="onboardStep2Title">How it works</div>
+      <div class="step-subtitle" data-i18n="onboardStep2Sub">OpenPaste runs on your PC and waits for content from your iPhone over Wi-Fi.</div>
+      <div class="how-steps">
+        <div class="how-step">
+          <span class="how-num">01</span>
+          <div class="how-text">
+            <h4 data-i18n="onboardHowStep1">Open OpenPaste on your PC</h4>
+            <p data-i18n="onboardHowStep1Detail">The app announces itself on the network as openpaste.local via Bonjour.</p>
+          </div>
+        </div>
+        <div class="how-step">
+          <span class="how-num">02</span>
+          <div class="how-text">
+            <h4 data-i18n="onboardHowStep2">Share from iPhone</h4>
+            <p data-i18n="onboardHowStep2Detail">Tap Share in any app and choose "Send to PC". Works with text, links, photos, PDFs and any file.</p>
+          </div>
+        </div>
+        <div class="how-step">
+          <span class="how-num">03</span>
+          <div class="how-text">
+            <h4 data-i18n="onboardHowStep3">Ready on Windows</h4>
+            <p data-i18n="onboardHowStep3Detail">Text and URLs go straight to the clipboard. Files are saved to your downloads folder.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Network info -->
+    <div class="step" id="step-2">
+      <div class="step-title" data-i18n="onboardStep3Title">Network Setup</div>
+      <div class="step-subtitle" data-i18n="onboardStep3Sub">The server is ready to receive content from your iPhone.</div>
+      <div class="server-status-badge" id="serverBadge">
+        <div class="status-dot-sm"></div>
+        <span data-i18n="onboardNetworkReady">Server is running</span>
+      </div>
+      <div class="net-cards">
+        <div class="net-card">
+          <span class="net-label" data-i18n="onboardNetworkPort">Port</span>
+          <span class="net-value" id="netPort">9876</span>
+        </div>
+        <div class="net-card">
+          <span class="net-label" data-i18n="onboardNetworkIP">Local IP</span>
+          <span class="net-value" id="netIP">—</span>
+        </div>
+        <div class="net-card">
+          <span class="net-label" data-i18n="onboardNetworkMdns">mDNS hostname</span>
+          <span class="net-value">openpaste.local</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: iOS Shortcut -->
+    <div class="step" id="step-3">
+      <div class="step-title" data-i18n="onboardStep4Title">iOS Shortcut</div>
+      <div class="step-subtitle" data-i18n="onboardStep4Sub">Install the shortcut on your iPhone to start sending content.</div>
+
+      <div style="width:100%;max-width:420px;margin-top:12px;">
+        <div class="endpoint-label" data-i18n="onboardEndpointLabel">Server endpoint</div>
+        <div class="endpoint-box" id="endpointBox">http://openpaste.local:9876/clip</div>
+      </div>
+
+      <div class="shortcut-steps">
+        <div class="shortcut-step-item">
+          <div class="step-badge">1</div>
+          <div data-i18n-html="onboardShortcutStep1">Open the <strong>Shortcuts</strong> app on your iPhone and tap <strong>"+"</strong>.</div>
+        </div>
+        <div class="shortcut-step-item">
+          <div class="step-badge">2</div>
+          <div data-i18n-html="onboardShortcutStep2">Under <strong>"Shortcut receives"</strong>, enable: Text, URLs, Images, Files and PDFs.</div>
+        </div>
+        <div class="shortcut-step-item">
+          <div class="step-badge">3</div>
+          <div data-i18n-html="onboardShortcutStep3">Add a <strong>"Get contents of URL"</strong> action with the endpoint shown above.</div>
+        </div>
+        <div class="shortcut-step-item">
+          <div class="step-badge">4</div>
+          <div data-i18n-html="onboardShortcutStep4">Name the shortcut <strong>"Send to PC"</strong> and save.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Navigation footer -->
+  <div class="nav-footer">
+    <button class="btn btn-ghost" id="btnBack" onclick="prevStep()" data-i18n="onboardBtnBack">Back</button>
+    <button class="btn btn-primary" id="btnNext" onclick="nextStep()" data-i18n="onboardBtnNext">Next</button>
+  </div>
+
+</div>
+
+<script src="onboarding.js"></script>
+</body>
+</html>
