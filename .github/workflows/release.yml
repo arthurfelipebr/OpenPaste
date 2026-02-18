@@ -1,0 +1,60 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'          # dispara em tags como v1.0.0, v1.2.3
+  workflow_dispatch:  # permite rodar manualmente pela UI do GitHub
+
+permissions:
+  contents: write    # necessário para criar releases e fazer upload de assets
+
+jobs:
+  build-windows:
+    name: Build Windows installer
+    runs-on: windows-latest
+
+    steps:
+      # ── 1. Checkout ─────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Node.js ──────────────────────────────────────────
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: electron/package-lock.json
+
+      # ── 3. Instalar dependências ─────────────────────────────
+      - name: Install dependencies
+        working-directory: electron
+        run: npm ci --prefer-offline
+
+      # ── 4. Build NSIS + Portable ────────────────────────────
+      - name: Build installer
+        working-directory: electron
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run build
+
+      # ── 5. Listar artefatos gerados ──────────────────────────
+      - name: List dist artifacts
+        run: Get-ChildItem -Path dist -Recurse -File | Select-Object FullName, Length
+        shell: pwsh
+
+      # ── 6. Upload para a Release do GitHub ──────────────────
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            dist/**/*.exe
+            dist/**/*.blockmap
+            dist/**/latest.yml
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

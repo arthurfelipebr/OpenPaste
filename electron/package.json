@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Bridge iPhone → Windows: clipboard e arquivos em segundos.",
   "main": "main.js",
-  "author": "OpenPaste",
+  "author": "Arthur Felipe <arthurfelipebr@gmail.com>",
   "license": "GPL-3.0",
   "scripts": {
     "start": "electron .",
@@ -26,32 +26,53 @@
   "build": {
     "appId": "com.openpaste.app",
     "productName": "OpenPaste",
+    "copyright": "Copyright © 2025 Arthur Felipe. GNU GPL v3.",
     "icon": "assets/icon.png",
+    "files": [
+      "**/*",
+      "!**/node_modules/.cache/**",
+      "!**/*.{iobj,ipdb}",
+      "!**/node_modules/electron/**",
+      "!**/node_modules/electron-builder/**"
+    ],
+    "directories": {
+      "output": "../dist"
+    },
     "win": {
       "target": [
         {
           "target": "nsis",
-          "arch": [
-            "x64"
-          ]
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
         }
       ],
-      "icon": "assets/icon.ico"
+      "icon": "assets/icon.ico",
+      "publisherName": "Arthur Felipe",
+      "verifyUpdateCodeSignature": false
     },
     "nsis": {
       "oneClick": false,
+      "perMachine": false,
       "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
       "createDesktopShortcut": true,
-      "runAfterFinish": true
+      "createStartMenuShortcut": true,
+      "shortcutName": "OpenPaste",
+      "runAfterFinish": true,
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeaderIcon": "assets/icon.ico",
+      "deleteAppDataOnUninstall": false
     },
-    "files": [
-      "**/*",
-      "!**/node_modules/.cache/**",
-      "!**/*.{iobj,ipdb}"
-    ],
-    "extraResources": [],
-    "directories": {
-      "output": "../dist"
-    }
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "arthurfelipebr",
+        "repo": "OpenPaste"
+      }
+    ]
   }
 }
