@@ -4,6 +4,7 @@ const os = require('os');
 
 let bonjourInstance = null;
 let publishedService = null;
+const OPENPASTE_HOST = 'openpaste.local';
 
 /**
  * Anuncia o serviço OpenPaste na rede local via mDNS/Bonjour.
@@ -25,7 +26,9 @@ async function advertise(port) {
     publishedService = bonjourInstance.publish({
       name: 'OpenPaste',
       type: 'http',
+      host: OPENPASTE_HOST,
       port: port,
+      disableIPv6: true,
       txt: {
         version: '1.0.0',
         platform: os.platform(),
@@ -33,7 +36,7 @@ async function advertise(port) {
     });
 
     publishedService.on('up', () => {
-      console.log(`[mdns] Anunciando openpaste.local:${port} via mDNS/Bonjour`);
+      console.log(`[mdns] Anunciando ${OPENPASTE_HOST}:${port} via mDNS/Bonjour`);
     });
 
     publishedService.on('error', (err) => {
