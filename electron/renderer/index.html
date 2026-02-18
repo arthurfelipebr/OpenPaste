@@ -6,25 +6,29 @@
   <title>OpenPaste</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
-    /* ── Reset & Base ──────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:       #0d0f14;
-      --surface:  #151820;
-      --card:     #1c2030;
-      --border:   #252a3a;
-      --accent:   #6c63ff;
-      --accent2:  #00e5a0;
-      --danger:   #ff4f6a;
-      --text:     #e8eaf0;
-      --muted:    #6b728a;
-      --radius:   12px;
-      --font:     'Space Grotesk', sans-serif;
-      --mono:     'JetBrains Mono', monospace;
-      --glow:     0 0 24px rgba(108,99,255,.25);
+      --bg:        #0e0e0e;
+      --surface:   #161616;
+      --card:      #1e1e1e;
+      --card2:     #272727;
+      --border:    #2e2e2e;
+      --border2:   #3a3a3a;
+      --accent:    #e8562a;
+      --accent-dim:rgba(232,86,42,.18);
+      --green:     #2dba5e;
+      --green-dim: rgba(45,186,94,.1);
+      --red:       #e05252;
+      --amber:     #f0a500;
+      --text:      #f0ede8;
+      --text2:     rgba(240,237,232,.55);
+      --muted:     rgba(240,237,232,.28);
+      --font:      'DM Mono', 'Courier New', monospace;
+      --mono:      'DM Mono', 'Courier New', monospace;
+      --r:         6px;
     }
 
     html, body {
@@ -32,15 +36,27 @@
       background: var(--bg);
       color: var(--text);
       font-family: var(--font);
-      font-size: 14px;
+      font-size: 13px;
       line-height: 1.5;
       overflow: hidden;
     }
 
-    /* ── Layout ────────────────────────────────────────── */
+    /* dot grid */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(240,237,232,.055) 1px, transparent 1px);
+      background-size: 26px 26px;
+      pointer-events: none;
+      z-index: 0;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+    }
+
+    /* ── Layout ─────────────────────────────────────────── */
     .shell {
       display: grid;
-      grid-template-rows: 56px 1fr;
+      grid-template-rows: 44px 1fr;
       height: 100vh;
     }
 
@@ -48,108 +64,148 @@
     header {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 0 20px;
+      gap: 0;
+      padding: 0;
       background: var(--surface);
       border-bottom: 1px solid var(--border);
       -webkit-app-region: drag;
+      position: relative;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 16px;
+      height: 100%;
+      border-right: 1px solid var(--border);
     }
 
     .logo-mark {
-      width: 28px; height: 28px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px;
+      width: 22px; height: 22px;
+      position: relative;
       flex-shrink: 0;
     }
 
-    header h1 {
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: -.3px;
+    .logo-mark svg {
+      width: 100%; height: 100%;
     }
 
-    header h1 span { color: var(--accent); }
+    header h1 {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: .5px;
+      color: var(--text);
+    }
+
+    header h1 .op { color: var(--accent); }
+
+    /* Breadcrumb-style tabs */
+    .header-tabs {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding: 0 6px;
+    }
+
+    .header-tab {
+      height: 100%;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: .3px;
+      border-right: 1px solid var(--border);
+      cursor: default;
+    }
+
+    .header-tab.active {
+      color: var(--text);
+      background: var(--bg);
+      border-bottom: 1px solid var(--bg);
+      margin-bottom: -1px;
+    }
 
     .header-right {
       margin-left: auto;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
+      padding: 0 12px;
+      height: 100%;
+      border-left: 1px solid var(--border);
       -webkit-app-region: no-drag;
     }
 
     /* Language switcher */
-    .lang-switcher {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
     .lang-btn {
       background: none;
       border: 1px solid var(--border);
       color: var(--muted);
       font-family: var(--mono);
       font-size: 10px;
-      padding: 3px 7px;
-      border-radius: 4px;
+      padding: 2px 6px;
+      border-radius: 3px;
       cursor: pointer;
-      transition: all .15s;
-      letter-spacing: .5px;
+      transition: all .1s;
+      letter-spacing: .8px;
     }
 
-    .lang-btn:hover { border-color: var(--accent); color: var(--text); }
-    .lang-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(108,99,255,.1); }
+    .lang-btn:hover { border-color: var(--border2); color: var(--text2); }
+    .lang-btn.active { border-color: rgba(232,86,42,.35); color: var(--accent); background: rgba(232,86,42,.06); }
 
+    /* Status pill */
     .status-pill {
-      display: flex; align-items: center; gap: 6px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 12px;
+      display: flex; align-items: center; gap: 5px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-family: var(--mono);
+      font-size: 11px;
       font-weight: 500;
-      background: rgba(0,229,160,.08);
-      border: 1px solid rgba(0,229,160,.2);
-      color: var(--accent2);
+      background: rgba(34,197,94,.06);
+      border: 1px solid rgba(34,197,94,.15);
+      color: var(--green);
       transition: all .2s;
     }
 
     .status-pill.offline {
-      background: rgba(255,79,106,.08);
-      border-color: rgba(255,79,106,.2);
-      color: var(--danger);
+      background: rgba(239,68,68,.06);
+      border-color: rgba(239,68,68,.15);
+      color: var(--red);
     }
 
     .status-dot {
-      width: 6px; height: 6px;
+      width: 5px; height: 5px;
       border-radius: 50%;
       background: currentColor;
-      animation: pulse 2s infinite;
     }
 
-    .status-pill.offline .status-dot { animation: none; }
+    .status-pill:not(.offline) .status-dot {
+      animation: pulse 2s ease-in-out infinite;
+    }
 
     @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: .3; }
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 currentColor; }
+      50%       { opacity: .6; }
     }
 
-    /* ── Main content ───────────────────────────────────── */
+    /* ── Main ───────────────────────────────────────────── */
     main {
       display: grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr auto;
-      gap: 12px;
-      padding: 16px;
+      gap: 1px;
+      background: var(--border);
+      padding: 0;
       overflow: hidden;
     }
 
     /* ── Cards ──────────────────────────────────────────── */
     .card {
       background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
       padding: 16px;
       display: flex;
       flex-direction: column;
@@ -157,20 +213,39 @@
       overflow: hidden;
     }
 
-    .card-title {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .8px;
-      color: var(--muted);
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
     }
 
-    /* ── Form fields ────────────────────────────────────── */
-    .field { display: flex; flex-direction: column; gap: 6px; }
+    .card-dot {
+      width: 6px; height: 6px;
+      border-radius: 1px;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .card-title {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text2);
+    }
+
+    /* ── Form fields ──────────────────────────────────────  */
+    .field { display: flex; flex-direction: column; gap: 5px; }
 
     label {
-      font-size: 12px;
+      font-family: var(--mono);
+      font-size: 10px;
       font-weight: 500;
+      letter-spacing: .8px;
+      text-transform: uppercase;
       color: var(--muted);
     }
 
@@ -179,14 +254,14 @@
       align-items: center;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: var(--r);
       overflow: hidden;
       transition: border-color .15s;
     }
 
     .input-wrap:focus-within {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(108,99,255,.12);
+      border-color: rgba(232,86,42,.4);
+      box-shadow: 0 0 0 2px rgba(232,86,42,.08);
     }
 
     input[type="number"],
@@ -197,32 +272,34 @@
       outline: none;
       color: var(--text);
       font-family: var(--mono);
-      font-size: 13px;
-      padding: 9px 12px;
+      font-size: 12px;
+      padding: 8px 10px;
     }
 
     input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
 
     .input-suffix {
       padding: 0 10px;
-      font-size: 11px;
+      font-family: var(--mono);
+      font-size: 10px;
       color: var(--muted);
       border-left: 1px solid var(--border);
       height: 100%;
       display: flex; align-items: center;
+      letter-spacing: .5px;
     }
 
     /* Path row */
     .path-row {
       display: flex;
-      gap: 6px;
+      gap: 4px;
     }
 
     .path-row .input-wrap { flex: 1; }
 
     .btn-icon {
-      width: 36px; height: 36px;
-      border-radius: 8px;
+      width: 34px; height: 34px;
+      border-radius: var(--r);
       border: 1px solid var(--border);
       background: var(--surface);
       color: var(--muted);
@@ -230,11 +307,12 @@
       display: flex; align-items: center; justify-content: center;
       transition: all .15s;
       flex-shrink: 0;
+      font-size: 14px;
     }
 
     .btn-icon:hover {
-      border-color: var(--accent);
-      color: var(--accent);
+      border-color: var(--border2);
+      color: var(--text);
     }
 
     /* Toggle */
@@ -242,65 +320,86 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      padding: 10px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
     }
 
-    .toggle-row span {
-      font-size: 13px;
+    .toggle-label-wrap span {
+      font-size: 12px;
       font-weight: 500;
+      color: var(--text);
+    }
+
+    .toggle-label-sub {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 1px;
     }
 
     .toggle {
       position: relative;
-      width: 40px; height: 22px;
+      width: 36px; height: 20px;
+      flex-shrink: 0;
     }
 
     .toggle input { display: none; }
 
     .toggle-track {
       position: absolute; inset: 0;
-      background: var(--border);
-      border-radius: 11px;
+      background: var(--border2);
+      border-radius: 10px;
       cursor: pointer;
       transition: background .2s;
     }
 
     .toggle input:checked + .toggle-track { background: var(--accent); }
-
     .toggle-track::after {
       content: '';
       position: absolute;
-      left: 3px; top: 3px;
+      left: 2px; top: 2px;
       width: 16px; height: 16px;
       border-radius: 50%;
       background: #fff;
       transition: left .2s;
     }
 
-    .toggle input:checked + .toggle-track::after { left: 21px; }
+    .toggle input:checked + .toggle-track::after { left: 18px; }
 
-    /* ── Network info ───────────────────────────────────── */
+    /* ── Network info ─────────────────────────────────────── */
     .net-info {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 2px;
     }
 
     .net-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 10px;
+      padding: 7px 10px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 0;
+      font-family: var(--mono);
     }
 
-    .net-row .label { font-size: 11px; color: var(--muted); }
+    .net-row:first-child { border-radius: var(--r) var(--r) 0 0; }
+    .net-row:last-child { border-radius: 0 0 var(--r) var(--r); }
+    .net-row + .net-row { border-top: none; }
+
+    .net-row .label {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
 
     .net-row .value {
-      font-family: var(--mono);
-      font-size: 12px;
-      color: var(--accent2);
+      font-size: 11px;
+      color: var(--green);
       display: flex;
       align-items: center;
       gap: 6px;
@@ -308,30 +407,64 @@
 
     .copy-btn {
       background: none;
-      border: none;
+      border: 1px solid transparent;
       color: var(--muted);
       cursor: pointer;
-      padding: 2px 4px;
-      border-radius: 4px;
-      font-size: 11px;
-      transition: color .15s;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-family: var(--mono);
+      font-size: 10px;
+      transition: all .1s;
     }
 
-    .copy-btn:hover { color: var(--accent); }
+    .copy-btn:hover {
+      border-color: var(--border2);
+      color: var(--text2);
+    }
 
     .hint {
+      font-family: var(--mono);
       font-size: 11px;
-      color: var(--muted);
+      color: var(--text2);
       padding: 8px 10px;
-      background: rgba(108,99,255,.06);
-      border: 1px solid rgba(108,99,255,.12);
-      border-radius: 8px;
+      background: rgba(240,165,0,.04);
+      border: 1px solid rgba(240,165,0,.12);
+      border-left: 2px solid rgba(240,165,0,.4);
+      border-radius: var(--r);
       line-height: 1.6;
     }
 
-    /* ── History ────────────────────────────────────────── */
+    .hint strong { color: var(--amber); font-weight: 500; }
+
+    /* Server toggle row */
+    .server-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      margin-top: auto;
+    }
+
+    .server-label span {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .server-label-sub {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    /* ── History ──────────────────────────────────────────── */
     .history-card {
       grid-column: 1 / -1;
+      background: var(--card2);
     }
 
     .history-header {
@@ -341,11 +474,13 @@
     }
 
     .badge {
+      font-family: var(--mono);
       font-size: 10px;
       font-weight: 600;
-      padding: 2px 7px;
-      border-radius: 20px;
-      background: rgba(108,99,255,.15);
+      padding: 1px 6px;
+      border-radius: 3px;
+      background: rgba(232,86,42,.1);
+      border: 1px solid rgba(232,86,42,.2);
       color: var(--accent);
     }
 
@@ -354,112 +489,118 @@
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 5px;
-      max-height: 140px;
-      padding-right: 4px;
+      gap: 2px;
+      max-height: 110px;
     }
 
     .history-list::-webkit-scrollbar { width: 4px; }
     .history-list::-webkit-scrollbar-track { background: transparent; }
-    .history-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .history-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
     .history-item {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 7px 10px;
+      padding: 6px 8px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 12px;
-      transition: border-color .15s;
+      border-radius: var(--r);
+      font-size: 11px;
+      transition: border-color .1s;
+      font-family: var(--mono);
     }
 
-    .history-item:hover { border-color: var(--accent); }
+    .history-item:hover { border-color: var(--border2); }
 
     .type-badge {
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 600;
-      padding: 2px 6px;
-      border-radius: 4px;
+      padding: 1px 5px;
+      border-radius: 2px;
       text-transform: uppercase;
-      letter-spacing: .4px;
+      letter-spacing: .6px;
       flex-shrink: 0;
+      font-family: var(--mono);
     }
 
-    .type-text  { background: rgba(108,99,255,.15); color: var(--accent); }
-    .type-url   { background: rgba(0,229,160,.1);   color: var(--accent2); }
-    .type-image { background: rgba(255,160,0,.1);   color: #ffaa00; }
-    .type-file  { background: rgba(100,180,255,.1); color: #64b4ff; }
+    .type-text  { background: rgba(232,86,42,.08);  color: var(--accent); border: 1px solid rgba(232,86,42,.18); }
+    .type-url   { background: rgba(45,186,94,.08);  color: var(--green);  border: 1px solid rgba(45,186,94,.2); }
+    .type-image { background: rgba(240,165,0,.08);  color: var(--amber);  border: 1px solid rgba(240,165,0,.2); }
+    .type-file  { background: rgba(240,237,232,.06); color: var(--text2); border: 1px solid rgba(240,237,232,.12); }
 
     .history-preview {
       flex: 1;
-      color: var(--muted);
+      color: var(--text2);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .history-time {
-      font-family: var(--mono);
       font-size: 10px;
-      color: var(--border);
+      color: var(--muted);
       flex-shrink: 0;
     }
 
     .empty-state {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 20px;
+      gap: 10px;
+      padding: 16px 8px;
       color: var(--muted);
-      font-size: 12px;
+      font-family: var(--mono);
+      font-size: 11px;
     }
 
-    .empty-icon { font-size: 24px; opacity: .4; }
+    .empty-state::before {
+      content: '//';
+      color: var(--border2);
+      font-size: 13px;
+    }
 
-    /* ── Footer / actions ───────────────────────────────── */
+    /* ── Footer ───────────────────────────────────────────── */
     .footer {
       grid-column: 1 / -1;
+      background: var(--surface);
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 8px;
+      padding: 8px 12px;
+      border-top: 1px solid var(--border);
     }
 
     .btn {
-      padding: 9px 18px;
-      border-radius: 8px;
-      font-family: var(--font);
-      font-size: 13px;
-      font-weight: 600;
+      padding: 7px 16px;
+      border-radius: var(--r);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 500;
       cursor: pointer;
       border: none;
       transition: all .15s;
-      display: flex; align-items: center; gap: 6px;
+      display: flex; align-items: center; gap: 5px;
+      letter-spacing: .2px;
     }
 
     .btn-ghost {
       background: transparent;
       border: 1px solid var(--border);
-      color: var(--muted);
+      color: var(--text2);
     }
 
     .btn-ghost:hover {
-      border-color: var(--accent);
+      border-color: var(--border2);
       color: var(--text);
     }
 
     .btn-primary {
       background: var(--accent);
       color: #fff;
-      box-shadow: var(--glow);
     }
 
     .btn-primary:hover {
-      background: #7c74ff;
+      background: #c73f18;
       transform: translateY(-1px);
     }
 
@@ -468,27 +609,57 @@
     .btn-danger {
       background: transparent;
       border: 1px solid var(--border);
-      color: var(--danger);
+      color: var(--red);
     }
 
     .btn-danger:hover {
-      border-color: var(--danger);
-      background: rgba(255,79,106,.08);
+      border-color: rgba(239,68,68,.3);
+      background: rgba(239,68,68,.05);
     }
 
+    .btn-stop {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--red);
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 5px 10px;
+      border-radius: var(--r);
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .btn-stop:hover { border-color: rgba(239,68,68,.3); background: rgba(239,68,68,.05); }
+
+    .btn-start {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 5px 10px;
+      border-radius: var(--r);
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .btn-start:hover { border-color: rgba(34,197,94,.3); background: rgba(34,197,94,.05); }
+
     .save-feedback {
-      font-size: 12px;
-      color: var(--accent2);
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--green);
       opacity: 0;
       transition: opacity .3s;
     }
 
     .save-feedback.visible { opacity: 1; }
+    .save-feedback.error { color: var(--red); }
 
-    /* ── Scrollbar global ───────────────────────────────── */
-    ::-webkit-scrollbar { width: 5px; }
+    /* ── Scrollbar global ─────────────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
   </style>
 </head>
 <body>
@@ -496,10 +667,20 @@
 
   <!-- Header -->
   <header>
-    <div class="logo-mark">📎</div>
-    <h1>Open<span>Paste</span></h1>
+    <div class="header-brand">
+      <div class="logo-mark">
+        <svg viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="1" width="20" height="20" rx="4" fill="rgba(232,86,42,0.12)" stroke="rgba(232,86,42,0.4)" stroke-width="1"/>
+          <path d="M6 7h10M6 11h7M6 15h9" stroke="#e8562a" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1><span class="op">Open</span>Paste</h1>
+    </div>
+    <div class="header-tabs">
+      <div class="header-tab active">settings.conf</div>
+    </div>
     <div class="header-right">
-      <div class="lang-switcher">
+      <div style="display:flex;gap:4px;">
         <button class="lang-btn" id="langEn" onclick="switchLang('en')">EN</button>
         <button class="lang-btn" id="langPt" onclick="switchLang('pt-BR')">PT</button>
       </div>
@@ -515,7 +696,10 @@
 
     <!-- Card: Network -->
     <div class="card">
-      <div class="card-title" data-i18n="cardNetwork">Network</div>
+      <div class="card-header">
+        <div class="card-dot"></div>
+        <div class="card-title" data-i18n="cardNetwork">Network</div>
+      </div>
 
       <div class="field">
         <label data-i18n="labelPort">Server port</label>
@@ -529,31 +713,34 @@
         <div class="net-row">
           <span class="label" data-i18n="labelLocalIP">Local IP</span>
           <span class="value" id="localIP">—
-            <button class="copy-btn" title="Copy" onclick="copyValue('localIP')">⎘</button>
+            <button class="copy-btn" title="Copy" onclick="copyValue('localIP')">copy</button>
           </span>
         </div>
         <div class="net-row">
-          <span class="label" data-i18n="labelMdnsHostname">mDNS hostname</span>
+          <span class="label" data-i18n="labelMdnsHostname">mDNS</span>
           <span class="value">openpaste.local
-            <button class="copy-btn" title="Copy" onclick="copyText('openpaste.local')">⎘</button>
+            <button class="copy-btn" title="Copy" onclick="copyText('openpaste.local')">copy</button>
           </span>
         </div>
         <div class="net-row">
           <span class="label" data-i18n="labelFullUrl">Full URL</span>
           <span class="value" id="fullUrl">—
-            <button class="copy-btn" title="Copy" onclick="copyValue('fullUrl')">⎘</button>
+            <button class="copy-btn" title="Copy" onclick="copyValue('fullUrl')">copy</button>
           </span>
         </div>
       </div>
 
       <div class="hint" id="hintMdns" data-i18n-html="hintMdns">
-        Use <strong>openpaste.local</strong> in the iOS Shortcut when iPhone and PC are on the same Wi-Fi.
+        Use the <strong>Local IP</strong> in the iOS Shortcut endpoint (same Wi-Fi network).
       </div>
     </div>
 
     <!-- Card: Settings -->
     <div class="card">
-      <div class="card-title" data-i18n="cardSettings">Settings</div>
+      <div class="card-header">
+        <div class="card-dot" style="background:var(--amber)"></div>
+        <div class="card-title" data-i18n="cardSettings">Settings</div>
+      </div>
 
       <div class="field">
         <label data-i18n="labelDownloadPath">Downloads folder</label>
@@ -567,9 +754,9 @@
       </div>
 
       <div class="toggle-row">
-        <div>
+        <div class="toggle-label-wrap">
           <span data-i18n="labelAutoLaunch">Start with Windows</span>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px;" data-i18n="labelAutoLaunchSub">Launches in tray at login</div>
+          <div class="toggle-label-sub" data-i18n="labelAutoLaunchSub">Launches in tray at login</div>
         </div>
         <label class="toggle">
           <input type="checkbox" id="autoLaunchToggle" />
@@ -579,24 +766,26 @@
 
       <div style="flex:1"></div>
 
-      <div class="toggle-row">
-        <div>
+      <div class="server-row">
+        <div class="server-label">
           <span data-i18n="labelHttpServer">HTTP Server</span>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px;" id="serverSubtitle">—</div>
+          <div class="server-label-sub" id="serverSubtitle">—</div>
         </div>
-        <button class="btn btn-ghost" id="toggleServerBtn" onclick="toggleServer()">…</button>
+        <button class="btn btn-ghost" id="toggleServerBtn" onclick="toggleServer()" style="font-size:11px;padding:5px 10px;">…</button>
       </div>
     </div>
 
     <!-- Card: History -->
     <div class="card history-card">
-      <div class="history-header">
-        <div class="card-title" data-i18n="cardHistory">Session history</div>
-        <span class="badge" id="historyCount">0</span>
+      <div class="card-header">
+        <div class="card-dot" style="background:var(--green)"></div>
+        <div class="history-header" style="flex:1">
+          <div class="card-title" data-i18n="cardHistory">Session history</div>
+          <span class="badge" id="historyCount">0</span>
+        </div>
       </div>
       <div class="history-list" id="historyList">
         <div class="empty-state">
-          <div class="empty-icon">📭</div>
           <span data-i18n="historyEmpty">No items received yet</span>
         </div>
       </div>
@@ -605,7 +794,7 @@
     <!-- Footer -->
     <div class="footer">
       <span class="save-feedback" id="saveFeedback"></span>
-      <div style="display:flex;gap:8px;margin-left:auto">
+      <div style="display:flex;gap:6px;margin-left:auto">
         <button class="btn btn-ghost" id="btnOpenFolderFooter" onclick="window.openPaste.openFolder()" data-i18n="btnOpenFolderFooter">Open folder</button>
         <button class="btn btn-primary" onclick="saveConfig()" data-i18n="btnSave">Save</button>
       </div>

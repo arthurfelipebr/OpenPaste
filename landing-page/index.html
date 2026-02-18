@@ -3,437 +3,301 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OpenPaste — iPhone meets Windows</title>
+  <title>OpenPaste — iPhone encontra Windows</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-  <!-- NAV -->
+  <!-- ░░ NAV ░░ -->
   <nav id="nav">
-    <div class="nav-logo">OPEN<span>PASTE</span></div>
-    <ul class="nav-links">
-      <li><a href="#how">Como funciona</a></li>
-      <li><a href="#features">Recursos</a></li>
-      <li><a href="#shortcut">Atalho iOS</a></li>
-      <li><a href="#download" class="nav-cta">Download</a></li>
-    </ul>
+    <a class="nav-logo" href="#">
+      <div class="nav-logo-mark">
+        <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="7" fill="#e8562a"/><path d="M9 11h14M9 16h9M9 21h11" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      OpenPaste
+    </a>
+    <div class="nav-right">
+      <a href="#how" class="nav-link">Como funciona</a>
+      <a href="#shortcut" class="nav-link">Instalar</a>
+      <a href="#download" class="nav-cta">Download grátis</a>
+    </div>
   </nav>
 
-  <!-- HERO -->
+  <!-- ░░ HERO ░░ -->
   <section class="hero">
-    <div class="hero-content">
-      <div class="hero-eyebrow">iPhone → Windows</div>
-      <h1 class="hero-title">
-        <div>OPEN</div>
-        <div class="line-amber">PAS</div>
-        <div class="line-outline">TE</div>
-      </h1>
-      <p class="hero-sub">
-        Envie <strong>texto, links, imagens e arquivos</strong> do iPhone para o Windows em dois toques.
-        Sem conta, sem nuvem, sem complicação — só Wi-Fi.
-      </p>
-      <div class="hero-actions">
-        <a href="#download" class="btn-primary">↓ &nbsp;Download grátis</a>
-        <a href="#shortcut" class="btn-ghost">Instalar no iPhone →</a>
+    <div class="hero-grain"></div>
+    <div class="hero-inner">
+      <div class="hero-text">
+        <p class="hero-kicker">Wi-Fi · Sem conta · Gratuito</p>
+        <h1 class="hero-h1">
+          Do iPhone<br>
+          <em>direto</em> no<br>
+          Windows.
+        </h1>
+        <p class="hero-desc">
+          Compartilhe texto, links, fotos e arquivos do iPhone para o PC em dois toques — tudo pelo Wi-Fi da sua casa.
+        </p>
+        <div class="hero-btns">
+          <a href="#download" class="btn-primary">
+            <svg width="16" height="16" viewBox="0 0 17 17" fill="none"><path d="M8.5 2.5v9m-4-4 4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 14.5h13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Download para Windows
+          </a>
+          <a href="https://www.icloud.com/shortcuts/c97f3c93f7c8471696888fce8e258aa5" class="btn-outline" target="_blank" rel="noopener">
+            Instalar no iPhone →
+          </a>
+        </div>
+        <p class="hero-fine">Windows 10 / 11 · iOS 13+ · Código aberto</p>
+      </div>
+
+      <div class="hero-visual">
+        <!-- Main card -->
+        <div class="hv-card hv-card-main">
+          <div class="hvc-titlebar">
+            <span class="hvc-dot" style="background:#ff5f57"></span>
+            <span class="hvc-dot" style="background:#ffbd2e"></span>
+            <span class="hvc-dot" style="background:#28c840"></span>
+            <span class="hvc-filename">openpaste — session</span>
+          </div>
+          <div class="hvc-status">
+            <span class="hvc-pulse"></span>
+            <span class="hvc-status-text">servidor ativo · porta 9876</span>
+          </div>
+          <div class="hvc-items">
+            <div class="hvc-item hvc-item--new">
+              <span class="hvc-tag hvc-tag--text">txt</span>
+              <span class="hvc-preview">Reunião amanhã às 10h no escri…</span>
+              <span class="hvc-time">agora</span>
+            </div>
+            <div class="hvc-item">
+              <span class="hvc-tag hvc-tag--url">url</span>
+              <span class="hvc-preview">https://github.com/arthu…</span>
+              <span class="hvc-time">2 min</span>
+            </div>
+            <div class="hvc-item">
+              <span class="hvc-tag hvc-tag--img">img</span>
+              <span class="hvc-preview">foto_viagem_2024.jpg</span>
+              <span class="hvc-time">5 min</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notification -->
+        <div class="hv-notif">
+          <div class="hv-notif-icon">
+            <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="7" fill="#e8562a"/><path d="M9 11h14M9 16h9M9 21h11" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <div class="hv-notif-title">OpenPaste</div>
+            <div class="hv-notif-body">✓ Copiado para o clipboard!</div>
+          </div>
+        </div>
+
+        <!-- Speed badge -->
+        <div class="hv-speed">
+          <div class="hv-speed-val">0.2s</div>
+          <div class="hv-speed-label">tempo médio</div>
+        </div>
+
+        <div class="hv-ring"></div>
       </div>
     </div>
 
-    <div class="hero-visual">
-      <div class="terminal">
-        <div class="terminal-bar">
-          <div class="dot dot-red"></div>
-          <div class="dot dot-yel"></div>
-          <div class="dot dot-grn"></div>
-          <div class="terminal-title">OpenPaste — servidor HTTP</div>
-        </div>
-        <div class="terminal-body">
-          <div><span class="t-muted">$</span> <span class="t-amber">./dev-launch.sh</span></div>
-          <div class="t-muted">Sincronizando fontes WSL → Windows…</div>
-          <div><span class="t-green">✓</span> <span class="t-white">Sync concluído</span></div>
-          <div class="t-muted">Instalando dependências…</div>
-          <div><span class="t-green">✓</span> <span class="t-white">npm install concluído</span></div>
-          <div>&nbsp;</div>
-          <div><span class="t-cyan">[mdns]</span> <span class="t-white">Anunciando <span class="t-amber">openpaste.local</span>:9876</span></div>
-          <div><span class="t-cyan">[server]</span> <span class="t-white">Listening on port <span class="t-amber">9876</span></span></div>
-          <div>&nbsp;</div>
-          <div><span class="t-green">POST</span> /clip <span class="t-dim">·</span> <span class="t-cyan">type=text</span></div>
-          <div><span class="t-green">✓</span> <span class="t-white">Copied to clipboard</span> <span class="t-muted">(42 chars)</span></div>
-          <div>&nbsp;</div>
-          <div><span class="t-green">POST</span> /clip <span class="t-dim">·</span> <span class="t-cyan">type=image</span></div>
-          <div><span class="t-green">✓</span> <span class="t-white">File saved</span> <span class="t-muted">foto.jpg</span><span class="cursor"></span></div>
-        </div>
-      </div>
-      <div class="hero-badge">
-        <strong>50MB</strong>limite por envio
-      </div>
-    </div>
+    <div class="hero-scroll-cue"><div class="scroll-cue-line"></div></div>
   </section>
 
-  <!-- TICKER -->
-  <div class="ticker">
-    <div class="ticker-track">
-      <div class="ticker-item">texto <span class="sep">✦</span></div>
-      <div class="ticker-item">URLs <span class="sep">✦</span></div>
-      <div class="ticker-item">imagens <span class="sep">✦</span></div>
-      <div class="ticker-item">arquivos <span class="sep">✦</span></div>
-      <div class="ticker-item">PDFs <span class="sep">✦</span></div>
-      <div class="ticker-item">clipboard automático <span class="sep">✦</span></div>
-      <div class="ticker-item">mDNS / Bonjour <span class="sep">✦</span></div>
-      <div class="ticker-item">notificações nativas <span class="sep">✦</span></div>
-      <div class="ticker-item">texto <span class="sep">✦</span></div>
-      <div class="ticker-item">URLs <span class="sep">✦</span></div>
-      <div class="ticker-item">imagens <span class="sep">✦</span></div>
-      <div class="ticker-item">arquivos <span class="sep">✦</span></div>
-      <div class="ticker-item">PDFs <span class="sep">✦</span></div>
-      <div class="ticker-item">clipboard automático <span class="sep">✦</span></div>
-      <div class="ticker-item">mDNS / Bonjour <span class="sep">✦</span></div>
-      <div class="ticker-item">notificações nativas <span class="sep">✦</span></div>
+  <!-- ░░ STRIP ░░ -->
+  <div class="strip">
+    <div class="strip-track">
+      <span>texto</span><em>·</em>
+      <span>links</span><em>·</em>
+      <span>fotos</span><em>·</em>
+      <span>arquivos</span><em>·</em>
+      <span>PDFs</span><em>·</em>
+      <span>sem conta</span><em>·</em>
+      <span>sem nuvem</span><em>·</em>
+      <span>Wi-Fi local</span><em>·</em>
+      <span>texto</span><em>·</em>
+      <span>links</span><em>·</em>
+      <span>fotos</span><em>·</em>
+      <span>arquivos</span><em>·</em>
+      <span>PDFs</span><em>·</em>
+      <span>sem conta</span><em>·</em>
+      <span>sem nuvem</span><em>·</em>
+      <span>Wi-Fi local</span><em>·</em>
     </div>
   </div>
 
-  <!-- HOW IT WORKS -->
-  <section class="section" id="how">
-    <div class="section-label"><span></span>Como funciona</div>
-    <h2 class="section-title">TRÊS<br><em>PASSOS.</em></h2>
-    <div class="steps">
-      <div class="step reveal">
-        <span class="step-num">01</span>
-        <span class="step-icon">🖥</span>
-        <h3>Abra o OpenPaste</h3>
-        <p>O app sobe no tray do Windows e anuncia <code style="font-family:var(--font-mono);font-size:11px;color:var(--amber)">openpaste.local</code> na rede Wi-Fi via Bonjour. Nenhuma configuração de IP necessária.</p>
-      </div>
-      <div class="step reveal reveal-delay-1">
-        <span class="step-num">02</span>
-        <span class="step-icon">📱</span>
-        <h3>Compartilhe no iPhone</h3>
-        <p>Toque em Compartilhar em qualquer app e escolha "Enviar para PC". Funciona com texto, links, fotos, PDFs e qualquer arquivo.</p>
-      </div>
-      <div class="step reveal reveal-delay-2">
-        <span class="step-num">03</span>
-        <span class="step-icon">⚡</span>
-        <h3>Pronto no Windows</h3>
-        <p>Texto e URLs vão direto para o clipboard. Imagens e arquivos são salvos na pasta de destino. Uma notificação confirma o recebimento.</p>
-      </div>
-    </div>
-  </section>
+  <!-- ░░ HOW ░░ -->
+  <section class="how-section" id="how">
+    <div class="how-inner">
+      <div class="how-label">Como funciona</div>
+      <h2 class="how-title">Três toques.<br><em>Feito.</em></h2>
 
-  <!-- FEATURES -->
-  <section class="section" id="features" style="padding-top:0;">
-    <div class="section-label"><span></span>Recursos</div>
-    <h2 class="section-title">TUDO<br>QUE <em>IMPORTA.</em></h2>
-    <div class="features-grid">
-      <div class="features-list">
-        <div class="feature-item reveal">
-          <div class="feature-icon">📋</div>
-          <div class="feature-text">
-            <h4>Clipboard automático</h4>
-            <p>Texto e URLs são colados diretamente na área de transferência do Windows. Só dar Ctrl+V.</p>
+      <div class="how-steps">
+        <div class="how-step reveal">
+          <div class="how-step-num">01</div>
+          <div class="how-step-body">
+            <div class="how-step-icon">🖥️</div>
+            <h3>Abra o OpenPaste</h3>
+            <p>O app senta quietinho no canto da barra de tarefas e fica esperando. Sem nenhuma configuração.</p>
           </div>
         </div>
-        <div class="feature-item reveal reveal-delay-1">
-          <div class="feature-icon">🔍</div>
-          <div class="feature-text">
-            <h4>Descoberta automática</h4>
-            <p>mDNS/Bonjour anuncia <code style="font-family:var(--font-mono);font-size:11px;color:var(--amber)">openpaste.local</code> na rede. O iPhone acha o PC sem precisar de IP fixo.</p>
+        <div class="how-connector"></div>
+        <div class="how-step reveal reveal-d1">
+          <div class="how-step-num">02</div>
+          <div class="how-step-body">
+            <div class="how-step-icon">📱</div>
+            <h3>Compartilhe do iPhone</h3>
+            <p>Toque em <strong>Compartilhar</strong> em qualquer app e escolha <strong>Enviar para PC</strong>. Funciona com qualquer coisa.</p>
           </div>
         </div>
-        <div class="feature-item reveal reveal-delay-2">
-          <div class="feature-icon">🗂</div>
-          <div class="feature-text">
-            <h4>Arquivos organizados</h4>
-            <p>Imagens e arquivos salvos em pasta configurável. Nomes únicos gerados automaticamente.</p>
-          </div>
-        </div>
-        <div class="feature-item reveal reveal-delay-3">
-          <div class="feature-icon">🔔</div>
-          <div class="feature-text">
-            <h4>Notificações nativas</h4>
-            <p>Alerta do próprio Windows a cada recebimento. Clique para abrir o arquivo direto na pasta.</p>
-          </div>
-        </div>
-        <div class="feature-item reveal reveal-delay-4">
-          <div class="feature-icon">⚙️</div>
-          <div class="feature-text">
-            <h4>Roda no tray, invisível</h4>
-            <p>Zero janelas abertas. Inicia com o Windows se quiser. Interface só quando precisar.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="features-visual">
-        <div style="position:relative; display:flex; justify-content:center;">
-          <div class="phone-mockup">
-            <div class="phone-screen">
-              <div class="phone-notch"><div class="phone-notch-bar"></div></div>
-              <div class="phone-body">
-                <div class="share-sheet">
-                  <div class="share-title">Compartilhar via</div>
-                  <div class="share-apps">
-                    <div class="share-app">
-                      <div class="share-app-icon highlight">📋</div>
-                      <span>Enviar para PC</span>
-                    </div>
-                    <div class="share-app">
-                      <div class="share-app-icon dim">💬</div>
-                      <span>Mensagens</span>
-                    </div>
-                    <div class="share-app">
-                      <div class="share-app-icon dim">📧</div>
-                      <span>Mail</span>
-                    </div>
-                    <div class="share-app">
-                      <div class="share-app-icon dim">📝</div>
-                      <span>Notas</span>
-                    </div>
-                  </div>
-                  <div class="share-actions">
-                    <div class="share-action active">
-                      <span>📋</span><span>Enviar para PC</span>
-                    </div>
-                    <div class="share-action" style="color:var(--muted);">
-                      <span>🔗</span><span>Copiar link</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="notif">
-            <div class="notif-header"><div class="notif-dot"></div>OpenPaste</div>
-            <p>Copiado para clipboard!</p>
-            <small>https://github.com/…</small>
+        <div class="how-connector"></div>
+        <div class="how-step reveal reveal-d2">
+          <div class="how-step-num">03</div>
+          <div class="how-step-body">
+            <div class="how-step-icon">⚡</div>
+            <h3>Já está lá</h3>
+            <p>Texto e links aparecem no clipboard — só Ctrl+V. Fotos e arquivos vão para a pasta que você escolheu.</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- SHORTCUT iOS -->
-  <section class="shortcut-section" id="shortcut">
-    <div class="section-label"><span></span>Atalho iOS</div>
-    <h2 class="section-title" style="margin-bottom:16px;">INSTALE<br>NO <em>iPHONE.</em></h2>
-    <p style="color:var(--muted);font-size:16px;max-width:520px;margin-bottom:64px;line-height:1.7;">
-      O Atalho iOS conecta o Share Sheet, Widget e Back Tap ao OpenPaste. Configure uma vez, use para sempre.
-    </p>
-
-    <div class="shortcut-grid">
-
-      <!-- Card fixo com instruções rápidas -->
-      <div class="install-card reveal">
-        <div class="install-card-header">
-          <div class="install-card-icon">📋</div>
-          <div>
-            <div class="install-card-title">Enviar para PC</div>
-            <div class="install-card-sub">Atalho iOS · OpenPaste</div>
-          </div>
-        </div>
-        <div class="install-card-body">
-          <div class="install-step-row">
-            <div class="step-badge">1</div>
-            <div class="step-text">Abra o app <strong>Atalhos</strong> no iPhone e toque em <strong>"+"</strong> para criar um novo atalho.</div>
-          </div>
-          <div class="install-step-row">
-            <div class="step-badge">2</div>
-            <div class="step-text">Em <strong>"Atalho recebe"</strong>, marque: Texto, URLs, Imagens, Arquivos e PDFs.</div>
-          </div>
-          <div class="install-step-row">
-            <div class="step-badge">3</div>
-            <div class="step-text">Adicione uma ação <strong>"Obter Conteúdo da URL"</strong> com o endpoint abaixo:</div>
-          </div>
-
-          <div>
-            <div class="snippet-label">URL do servidor</div>
-            <div class="code-snippet" id="endpointSnippet">
-              http://openpaste.local:9876/clip
-              <button class="copy-inline" onclick="copySnippet('endpointSnippet', this)">copiar</button>
-            </div>
-          </div>
-
-          <div>
-            <div class="snippet-label">Método + corpo JSON</div>
-            <div class="json-block">
-              <span class="json-punct">{</span><br>
-              &nbsp;&nbsp;<span class="json-key">"type"</span><span class="json-punct">:</span> <span class="json-var">[tipo detectado]</span><span class="json-punct">,</span><br>
-              &nbsp;&nbsp;<span class="json-key">"content"</span><span class="json-punct">:</span> <span class="json-var">[conteúdo ou base64]</span><span class="json-punct">,</span><br>
-              &nbsp;&nbsp;<span class="json-key">"filename"</span><span class="json-punct">:</span> <span class="json-var">[nome do arquivo]</span><br>
-              <span class="json-punct">}</span>
-            </div>
-          </div>
-
-          <div class="install-step-row">
-            <div class="step-badge">4</div>
-            <div class="step-text">Nomeie o atalho <strong>"Enviar para PC"</strong> e salve. Pronto.</div>
-          </div>
-        </div>
-        <div class="install-card-footer">
-          <div class="ios-notice">
-            <span class="badge-ios">iOS 13+</span>
-            <span>Requer app Atalhos (nativo no iOS 13 ou superior)</span>
-          </div>
-        </div>
+  <!-- ░░ FEATURES ░░ -->
+  <section class="feat-section">
+    <div class="feat-inner">
+      <div class="feat-headline reveal">
+        <div class="feat-label">Por que OpenPaste</div>
+        <h2 class="feat-title">Tudo que<br>você precisa.<br><em>Só isso.</em></h2>
       </div>
 
-      <!-- Steps detalhados em accordion -->
-      <div class="shortcut-steps">
-
-        <div class="shortcut-step open reveal">
-          <div class="shortcut-step-header" onclick="toggleStep(this)">
-            <span class="ss-num">01</span>
-            <span class="ss-title">Configure os tipos de entrada</span>
-            <span class="ss-chevron">▼</span>
-          </div>
-          <div class="shortcut-step-body">
-            <p>No topo do editor do Atalho, toque em <strong>"Atalho recebe"</strong> e habilite todos os tipos:</p>
-            <div class="trigger-chips" style="margin-top:10px;">
-              <div class="trigger-chip"><span class="ss-tag ss-tag-type">Texto</span></div>
-              <div class="trigger-chip"><span class="ss-tag ss-tag-type">URLs</span></div>
-              <div class="trigger-chip"><span class="ss-tag ss-tag-type">Imagens</span></div>
-              <div class="trigger-chip"><span class="ss-tag ss-tag-type">Arquivos</span></div>
-              <div class="trigger-chip"><span class="ss-tag ss-tag-type">PDFs</span></div>
-            </div>
-            <p style="margin-top:12px;">Deixe <strong>"Nenhuma entrada"</strong> desmarcado para poder disparar o atalho manualmente também (pega a área de transferência).</p>
-          </div>
+      <div class="feat-grid">
+        <div class="feat-card feat-card--large reveal">
+          <div class="feat-card-emoji">🔒</div>
+          <h4>Privacidade de verdade</h4>
+          <p>Nada passa por servidor externo. Seus dados ficam na sua rede, no seu dispositivo. Ponto.</p>
         </div>
-
-        <div class="shortcut-step reveal reveal-delay-1">
-          <div class="shortcut-step-header" onclick="toggleStep(this)">
-            <span class="ss-num">02</span>
-            <span class="ss-title">Detecte o tipo do conteúdo</span>
-            <span class="ss-chevron">▼</span>
-          </div>
-          <div class="shortcut-step-body">
-            <p>Adicione um bloco <strong>"Se"</strong> para identificar o tipo de entrada:</p>
-            <p>• Se a entrada <strong>for Imagem</strong> → encode em Base64 → <code>type = "image"</code></p>
-            <p>• Se <strong>for Arquivo/PDF</strong> → encode em Base64 → <code>type = "file"</code></p>
-            <p>• <strong>Senão</strong> → use como string → <code>type = "text"</code> ou <code>"url"</code></p>
-            <p style="margin-top:10px;">Dica: use a ação <strong>"Codificar em Base64"</strong> do iOS para imagens e arquivos antes de enviar.</p>
-          </div>
+        <div class="feat-card reveal reveal-d1">
+          <div class="feat-card-emoji">📋</div>
+          <h4>Cola direto</h4>
+          <p>Texto e links chegam já na área de transferência. Só Ctrl+V.</p>
         </div>
-
-        <div class="shortcut-step reveal reveal-delay-2">
-          <div class="shortcut-step-header" onclick="toggleStep(this)">
-            <span class="ss-num">03</span>
-            <span class="ss-title">Configure o request HTTP</span>
-            <span class="ss-chevron">▼</span>
-          </div>
-          <div class="shortcut-step-body">
-            <p>Adicione <strong>"Obter Conteúdo da URL"</strong> com as seguintes configurações:</p>
-            <div class="json-block" style="margin-top:10px;">
-              <span class="json-key">URL</span><span class="json-punct">:</span> <span class="json-str">http://openpaste.local:9876/clip</span><br>
-              <span class="json-key">Método</span><span class="json-punct">:</span> <span class="json-var">POST</span><br>
-              <span class="json-key">Content-Type</span><span class="json-punct">:</span> <span class="json-str">application/json</span><br>
-              <span class="json-key">Corpo</span><span class="json-punct">:</span> <span class="json-var">JSON</span>
-            </div>
-            <p style="margin-top:10px;">No campo <strong>corpo JSON</strong>, adicione as chaves <code>type</code>, <code>content</code> e <code>filename</code> apontando para as variáveis do Atalho.</p>
-          </div>
+        <div class="feat-card reveal reveal-d2">
+          <div class="feat-card-emoji">🖼️</div>
+          <h4>Fotos & arquivos</h4>
+          <p>Imagens, PDFs e qualquer arquivo vão direto pra pasta que você escolher.</p>
         </div>
-
-        <div class="shortcut-step reveal reveal-delay-3">
-          <div class="shortcut-step-header" onclick="toggleStep(this)">
-            <span class="ss-num">04</span>
-            <span class="ss-title">Adicione feedback visual</span>
-            <span class="ss-chevron">▼</span>
-          </div>
-          <div class="shortcut-step-body">
-            <p>Após o request, adicione um <strong>"Se"</strong> verificando se o resultado contém <code>"ok":true</code>:</p>
-            <p>• <strong>Sim</strong> → "Mostrar Notificação" com <code>✓ Enviado para o PC</code></p>
-            <p>• <strong>Não</strong> → "Mostrar Alerta" com <code>Falha ao conectar. Verifique o OpenPaste.</code></p>
-          </div>
+        <div class="feat-card reveal reveal-d1">
+          <div class="feat-card-emoji">🔔</div>
+          <h4>Notificações nativas</h4>
+          <p>O Windows avisa cada vez que algo chega.</p>
         </div>
-
-        <div class="shortcut-step reveal reveal-delay-4">
-          <div class="shortcut-step-header" onclick="toggleStep(this)">
-            <span class="ss-num">05</span>
-            <span class="ss-title">Formas de disparar o atalho</span>
-            <span class="ss-chevron">▼</span>
-          </div>
-          <div class="shortcut-step-body">
-            <p>Depois de salvar, o atalho pode ser disparado de várias formas:</p>
-            <div class="trigger-chips">
-              <div class="trigger-chip">📤 Share Sheet</div>
-              <div class="trigger-chip">🔲 Widget</div>
-              <div class="trigger-chip">👆 Back Tap</div>
-              <div class="trigger-chip">🔘 Botão de Ação</div>
-            </div>
-            <p style="margin-top:12px;"><strong>Share Sheet (recomendado):</strong> botão Compartilhar em qualquer app → "Mais" → ative "Enviar para PC".</p>
-            <p><strong>Back Tap:</strong> Ajustes → Acessibilidade → Toque → Back Tap → selecione o atalho.</p>
-            <p><strong>Botão de Ação</strong> (iPhone 15 Pro / 16): Ajustes → Botão de Ação → Atalho → "Enviar para PC".</p>
-          </div>
+        <div class="feat-card reveal reveal-d2">
+          <div class="feat-card-emoji">🔌</div>
+          <h4>Encontra o PC sozinho</h4>
+          <p>Não precisa de IP. iPhone acha o PC na rede automaticamente.</p>
         </div>
-
-        <div class="shortcut-step reveal" style="border-color:rgba(245,166,35,.2);">
-          <div class="shortcut-step-header" onclick="toggleStep(this)" style="background:rgba(245,166,35,.03);">
-            <span class="ss-num" style="color:var(--amber-dim);">⚠</span>
-            <span class="ss-title">Se o mDNS não funcionar</span>
-            <span class="ss-chevron">▼</span>
-          </div>
-          <div class="shortcut-step-body">
-            <p>Alguns roteadores bloqueiam mDNS entre dispositivos. Nesse caso, substitua <code>openpaste.local</code> pelo IP local do PC.</p>
-            <p style="margin-top:8px;">O IP aparece na aba <strong>Rede</strong> nas Configurações do OpenPaste (janela do app Windows).</p>
-            <div class="code-snippet" style="margin-top:10px;" id="ipFallback">
-              http://192.168.1.X:9876/clip
-              <button class="copy-inline" onclick="copySnippet('ipFallback', this)">copiar</button>
-            </div>
-          </div>
+        <div class="feat-card feat-card--accent reveal reveal-d3">
+          <div class="feat-card-emoji">✦</div>
+          <h4>Inicia com Windows</h4>
+          <p>Configure uma vez. Nunca mais pense nisso. Sempre pronto.</p>
         </div>
-
       </div>
     </div>
   </section>
 
-  <!-- TECH -->
-  <section class="tech-section" id="tech">
-    <div class="section-label"><span></span>Tecnologia</div>
-    <h2 class="section-title" style="font-size:clamp(40px,5vw,72px);margin-bottom:0;">STACK <em>OPEN SOURCE.</em></h2>
-    <div class="tech-grid">
-      <div class="tech-card reveal">
-        <div class="tech-card-label">Runtime</div>
-        <h4>Electron</h4>
-        <p>App nativo Windows com tray, notificações e acesso ao clipboard do sistema.</p>
+  <!-- ░░ SHORTCUT ░░ -->
+  <section class="sc-section" id="shortcut">
+    <div class="sc-inner">
+      <div class="sc-left reveal">
+        <div class="sc-label">Atalho iOS</div>
+        <h2 class="sc-title">Configure o<br>iPhone em<br><em>1 minuto.</em></h2>
+        <p class="sc-desc">
+          Um toque instala o atalho. Ele aparece no botão <strong>Compartilhar</strong> de qualquer app — fotos, textos, links, o que for.
+        </p>
+        <a href="https://www.icloud.com/shortcuts/c97f3c93f7c8471696888fce8e258aa5" class="btn-primary-lg" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3v13M7 11l5 5 5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="19" width="18" height="2" rx="1" fill="currentColor"/></svg>
+          Instalar Atalho no iPhone
+        </a>
+        <p class="sc-fine">Requer app Atalhos — nativo no iOS 13 ou superior</p>
       </div>
-      <div class="tech-card reveal reveal-delay-1">
-        <div class="tech-card-label">Servidor</div>
-        <h4>Express.js</h4>
-        <p>HTTP server leve escutando na rede local. Limite de 50 MB por payload.</p>
-      </div>
-      <div class="tech-card reveal reveal-delay-2">
-        <div class="tech-card-label">Descoberta</div>
-        <h4>Bonjour / mDNS</h4>
-        <p>O PC anuncia <code style="font-family:var(--font-mono);font-size:11px;color:var(--amber)">openpaste.local</code> automaticamente. Nenhum IP para lembrar.</p>
-      </div>
-      <div class="tech-card reveal reveal-delay-3">
-        <div class="tech-card-label">iPhone</div>
-        <h4>Atalhos iOS</h4>
-        <p>Atalho nativo dispara pelo Share Sheet, Widget, Back Tap ou Botão de Ação.</p>
+
+      <div class="sc-right reveal reveal-d1">
+        <div class="sc-steps">
+          <div class="sc-step">
+            <div class="sc-step-n">1</div>
+            <div class="sc-step-t">
+              <strong>Toque no botão acima</strong>
+              <span>O link abre o app Atalhos direto na tela de instalação.</span>
+            </div>
+          </div>
+          <div class="sc-step">
+            <div class="sc-step-n">2</div>
+            <div class="sc-step-t">
+              <strong>Toque em "Adicionar atalho"</strong>
+              <span>Confirme a permissão de rede quando o iOS pedir.</span>
+            </div>
+          </div>
+          <div class="sc-step">
+            <div class="sc-step-n">3</div>
+            <div class="sc-step-t">
+              <strong>Use pelo Compartilhar</strong>
+              <span>Em qualquer app — toque Compartilhar → Enviar para PC.</span>
+            </div>
+          </div>
+        </div>
+        <div class="sc-chips">
+          <span class="sc-chip">📤 Share Sheet</span>
+          <span class="sc-chip">🔲 Widget</span>
+          <span class="sc-chip">👆 Back Tap</span>
+          <span class="sc-chip">🔘 Botão de Ação</span>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- CTA -->
+  <!-- ░░ CTA ░░ -->
   <section class="cta-section" id="download">
-    <div class="cta-bg"></div>
-    <h2>BAIXE<br><span style="color:var(--amber)">GRÁTIS.</span></h2>
-    <p>Código aberto, sem telemetria, sem conta. Seus dados ficam na sua rede.</p>
-    <div class="cta-actions">
-      <a href="#" class="btn-primary" style="font-size:15px;padding:16px 32px;">↓ &nbsp;Download para Windows</a>
-      <a href="https://github.com/arthurfelipebr/OpenPaste" class="btn-ghost" target="_blank">Ver no GitHub →</a>
-    </div>
-    <div class="os-badges">
-      <div class="os-badge">🪟 Windows 10 / 11</div>
-      <span class="os-sep">·</span>
-      <div class="os-badge">📱 iOS 13+</div>
-      <span class="os-sep">·</span>
-      <div class="os-badge">✦ Wi-Fi LAN</div>
+    <div class="cta-grain"></div>
+    <div class="cta-inner">
+      <p class="cta-kicker">Gratuito · Código aberto · GPL-3.0</p>
+      <h2 class="cta-title">
+        Seus arquivos,<br>
+        <em>na hora.</em>
+      </h2>
+      <div class="cta-btns">
+        <a href="#" class="btn-primary-lg">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v13M7 11l5 5 5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="19" width="18" height="2" rx="1" fill="currentColor"/></svg>
+          Download para Windows
+        </a>
+        <a href="https://github.com/arthurfelipebr/OpenPaste" class="btn-ghost-cta" target="_blank" rel="noopener">
+          GitHub →
+        </a>
+      </div>
+      <div class="cta-compat">
+        <span>Windows 10 / 11</span>
+        <span class="sep">·</span>
+        <span>iOS 13+</span>
+        <span class="sep">·</span>
+        <span>Wi-Fi local</span>
+      </div>
     </div>
   </section>
 
-  <!-- FOOTER -->
+  <!-- ░░ FOOTER ░░ -->
   <footer>
-    <div class="footer-logo">OPEN<span>PASTE</span></div>
-    <p>GPL-3.0 License · Electron + iOS Shortcuts · open source</p>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <svg width="20" height="20" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="7" fill="#e8562a"/><path d="M9 11h14M9 16h9M9 21h11" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+        OpenPaste
+      </div>
+      <p>GPL-3.0 · open source</p>
+      <a href="https://github.com/arthurfelipebr/OpenPaste" target="_blank" rel="noopener">GitHub →</a>
+    </div>
   </footer>
 
   <script src="js/app.js"></script>

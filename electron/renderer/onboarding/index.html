@@ -6,51 +6,72 @@
   <title>OpenPaste</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:      #0d0f14;
-      --surface: #151820;
-      --card:    #1c2030;
-      --border:  #252a3a;
-      --accent:  #6c63ff;
-      --accent2: #00e5a0;
-      --danger:  #ff4f6a;
-      --text:    #e8eaf0;
-      --muted:   #6b728a;
-      --font:    'Space Grotesk', sans-serif;
-      --mono:    'JetBrains Mono', monospace;
-      --glow:    0 0 24px rgba(108,99,255,.25);
+      --ink:       #0e0e0e;
+      --ink-2:     #161616;
+      --ink-3:     #1e1e1e;
+      --ink-4:     #272727;
+      --wire:      #2e2e2e;
+      --wire-2:    #3a3a3a;
+      --coral:     #e8562a;
+      --coral-d:   #c73f18;
+      --amber:     #f0a500;
+      --green:     #2dba5e;
+      --red:       #e05252;
+      --sand:      #f0ede8;
+      --sand-2:    rgba(240,237,232,.55);
+      --sand-3:    rgba(240,237,232,.28);
+      --sand-4:    rgba(240,237,232,.1);
+      --font-disp: 'DM Serif Display', Georgia, serif;
+      --font-mono: 'DM Mono', 'Courier New', monospace;
+      --r:         6px;
+      --r-lg:      10px;
     }
 
     html, body {
       height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font);
-      font-size: 14px;
-      line-height: 1.5;
+      background: var(--ink);
+      color: var(--sand);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.55;
       overflow: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Shell ──────────────────────────────────────────── */
+    /* subtle dot grid */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(240,237,232,.06) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+      z-index: 0;
+      mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 100%);
+    }
+
     .shell {
       display: flex;
       flex-direction: column;
       height: 100vh;
+      position: relative;
+      z-index: 1;
     }
 
-    /* ── Header ─────────────────────────────────────────── */
+    /* ── Header ───────────────────────────────────── */
     header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 24px;
-      height: 52px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
+      padding: 0 18px;
+      height: 46px;
+      background: var(--ink-2);
+      border-bottom: 1px solid var(--wire);
       -webkit-app-region: drag;
       flex-shrink: 0;
     }
@@ -58,26 +79,25 @@
     .logo {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 9px;
     }
 
     .logo-mark {
-      width: 26px; height: 26px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      border-radius: 7px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px;
+      width: 22px; height: 22px;
+      flex-shrink: 0;
     }
+    .logo-mark svg { width: 100%; height: 100%; }
 
     .logo-text {
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: -.3px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--sand);
+      letter-spacing: .04em;
     }
 
-    .logo-text span { color: var(--accent); }
+    .logo-text .op { color: var(--coral); }
 
-    /* Lang switcher in header */
     .lang-switcher {
       display: flex;
       gap: 4px;
@@ -86,45 +106,45 @@
 
     .lang-btn {
       background: none;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      font-family: var(--mono);
+      border: 1px solid var(--wire);
+      color: var(--sand-3);
+      font-family: var(--font-mono);
       font-size: 10px;
-      padding: 3px 8px;
-      border-radius: 4px;
+      padding: 2px 8px;
+      border-radius: var(--r);
       cursor: pointer;
       transition: all .15s;
-      letter-spacing: .5px;
+      letter-spacing: .1em;
     }
 
-    .lang-btn:hover { border-color: var(--accent); color: var(--text); }
-    .lang-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(108,99,255,.1); }
+    .lang-btn:hover { border-color: var(--wire-2); color: var(--sand-2); }
+    .lang-btn.active { border-color: rgba(232,86,42,.4); color: var(--coral); background: rgba(232,86,42,.06); }
 
-    /* ── Progress dots ──────────────────────────────────── */
+    /* ── Progress ─────────────────────────────────── */
     .progress {
       display: flex;
       justify-content: center;
       gap: 6px;
-      padding: 16px 0 12px;
+      padding: 14px 0 10px;
       flex-shrink: 0;
     }
 
     .dot {
-      width: 6px; height: 6px;
+      width: 5px; height: 5px;
       border-radius: 50%;
-      background: var(--border);
-      transition: all .3s;
+      background: var(--wire-2);
+      transition: all .35s cubic-bezier(.34,1.56,.64,1);
     }
 
     .dot.active {
-      background: var(--accent);
-      width: 20px;
+      background: var(--coral);
+      width: 22px;
       border-radius: 3px;
     }
 
-    .dot.done { background: var(--accent2); }
+    .dot.done { background: var(--green); }
 
-    /* ── Steps container ────────────────────────────────── */
+    /* ── Steps ────────────────────────────────────── */
     .steps-wrapper {
       flex: 1;
       overflow: hidden;
@@ -138,11 +158,11 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 20px 36px;
+      padding: 16px 32px;
       text-align: center;
       opacity: 0;
-      transform: translateX(40px);
-      transition: opacity .3s ease, transform .3s ease;
+      transform: translateX(28px);
+      transition: opacity .26s ease, transform .26s ease;
       pointer-events: none;
     }
 
@@ -154,256 +174,395 @@
 
     .step.exit {
       opacity: 0;
-      transform: translateX(-40px);
+      transform: translateX(-28px);
     }
 
-    .step-icon {
-      font-size: 52px;
-      margin-bottom: 20px;
-      line-height: 1;
-    }
-
+    /* ── Step titles ──────────────────────────────── */
     .step-title {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -.5px;
+      font-family: var(--font-disp);
+      font-size: 24px;
+      font-weight: 400;
+      letter-spacing: -.02em;
       margin-bottom: 8px;
+      color: var(--sand);
     }
 
     .step-subtitle {
-      font-size: 14px;
-      color: var(--muted);
-      max-width: 400px;
-      line-height: 1.65;
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--sand-2);
+      max-width: 340px;
+      line-height: 1.7;
+      letter-spacing: .02em;
     }
 
-    /* ── How-it-works step ──────────────────────────────── */
+    /* ── Step 1: Welcome ──────────────────────────── */
+    .welcome-icon {
+      width: 60px; height: 60px;
+      border-radius: var(--r-lg);
+      background: rgba(232,86,42,.08);
+      border: 1px solid rgba(232,86,42,.22);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .welcome-icon svg { width: 28px; height: 28px; }
+
+    .lang-picker {
+      display: flex;
+      gap: 8px;
+      margin-top: 22px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .lang-option {
+      flex: 1;
+      padding: 13px 10px;
+      background: var(--ink-2);
+      border: 1px solid var(--wire);
+      border-radius: var(--r-lg);
+      cursor: pointer;
+      text-align: center;
+      transition: all .18s;
+      font-family: var(--font-mono);
+      color: var(--sand-2);
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    .lang-option:hover { border-color: var(--wire-2); color: var(--sand); }
+
+    .lang-option.selected {
+      border-color: rgba(232,86,42,.35);
+      background: rgba(232,86,42,.05);
+      color: var(--coral);
+    }
+
+    .lang-option .flag { font-size: 20px; display: block; margin-bottom: 5px; }
+
+    /* ── Step 2: How it works ─────────────────────── */
     .how-steps {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 4px;
       width: 100%;
-      max-width: 420px;
-      margin-top: 20px;
+      max-width: 380px;
+      margin-top: 18px;
       text-align: left;
     }
 
     .how-step {
       display: flex;
       align-items: flex-start;
-      gap: 14px;
-      padding: 12px 16px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
+      gap: 12px;
+      padding: 10px 14px;
+      background: var(--ink-2);
+      border: 1px solid var(--wire);
+      border-radius: var(--r);
+      transition: border-color .15s;
     }
 
+    .how-step:hover { border-color: var(--wire-2); }
+
     .how-num {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--accent);
-      background: rgba(108,99,255,.1);
-      border: 1px solid rgba(108,99,255,.2);
-      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--amber);
+      background: rgba(240,165,0,.08);
+      border: 1px solid rgba(240,165,0,.18);
+      border-radius: 3px;
       padding: 2px 7px;
       flex-shrink: 0;
       margin-top: 2px;
+      letter-spacing: .08em;
     }
 
-    .how-text h4 { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-    .how-text p { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .how-text h4 {
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 2px;
+      color: var(--sand);
+      letter-spacing: .01em;
+    }
 
-    /* ── Network step ───────────────────────────────────── */
+    .how-text p {
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--sand-2);
+      line-height: 1.55;
+      letter-spacing: .02em;
+    }
+
+    /* ── Step 3: Network ──────────────────────────── */
     .net-cards {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 0;
       width: 100%;
-      max-width: 380px;
-      margin-top: 20px;
+      max-width: 340px;
+      margin-top: 14px;
+      border: 1px solid var(--wire);
+      border-radius: var(--r-lg);
+      overflow: hidden;
     }
 
     .net-card {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 14px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      padding: 9px 14px;
+      background: var(--ink-2);
     }
 
-    .net-label { font-size: 12px; color: var(--muted); }
+    .net-card + .net-card { border-top: 1px solid var(--wire); }
+
+    .net-label {
+      font-size: 10px;
+      color: var(--sand-3);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
     .net-value {
-      font-family: var(--mono);
       font-size: 12px;
-      color: var(--accent2);
+      color: var(--green);
+      letter-spacing: .04em;
     }
 
     .server-status-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 4px 10px;
-      border-radius: 20px;
+      padding: 4px 12px;
+      border-radius: var(--r);
       font-size: 11px;
-      font-weight: 600;
-      background: rgba(0,229,160,.08);
-      border: 1px solid rgba(0,229,160,.2);
-      color: var(--accent2);
-      margin-bottom: 16px;
+      font-weight: 400;
+      letter-spacing: .06em;
+      background: rgba(45,186,94,.05);
+      border: 1px solid rgba(45,186,94,.18);
+      color: var(--green);
+      margin-bottom: 14px;
     }
 
     .status-dot-sm {
       width: 5px; height: 5px;
       border-radius: 50%;
       background: currentColor;
-      animation: pulse 2s infinite;
+      animation: pulse 2s ease-in-out infinite;
     }
 
-    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.3; } }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
 
-    /* ── Shortcut step ──────────────────────────────────── */
+    /* ── Step 4: Shortcut ─────────────────────────── */
+    .shortcut-install-box {
+      width: 100%;
+      max-width: 380px;
+      margin-top: 14px;
+      background: var(--ink-2);
+      border: 1px solid rgba(232,86,42,.25);
+      border-left: 2px solid var(--coral);
+      border-radius: var(--r-lg);
+      padding: 16px 18px;
+      text-align: center;
+    }
+
+    .install-icon {
+      font-size: 24px;
+      margin-bottom: 7px;
+      display: block;
+    }
+
+    .install-title {
+      font-family: var(--font-disp);
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--sand);
+      margin-bottom: 4px;
+      letter-spacing: -.01em;
+    }
+
+    .install-hint {
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--sand-3);
+      margin-bottom: 14px;
+      letter-spacing: .03em;
+    }
+
+    .btn-install {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--coral);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 9px 20px;
+      border-radius: var(--r);
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: background .15s, transform .15s;
+      letter-spacing: .04em;
+    }
+
+    .btn-install:hover {
+      background: var(--coral-d);
+      transform: translateY(-1px);
+    }
+
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 12px 0 8px;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--wire);
+    }
+
+    .or-text {
+      font-size: 10px;
+      color: var(--sand-3);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
     .shortcut-steps {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 4px;
       width: 100%;
-      max-width: 420px;
-      margin-top: 16px;
+      max-width: 380px;
       text-align: left;
     }
 
     .shortcut-step-item {
       display: flex;
       align-items: flex-start;
-      gap: 12px;
-      padding: 10px 14px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.5;
+      gap: 10px;
+      padding: 8px 12px;
+      background: var(--ink-2);
+      border: 1px solid var(--wire);
+      border-radius: var(--r);
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--sand-2);
+      line-height: 1.55;
+      letter-spacing: .02em;
     }
 
-    .shortcut-step-item strong { color: var(--text); }
+    .shortcut-step-item strong { color: var(--sand); font-weight: 500; }
 
     .step-badge {
-      width: 22px; height: 22px;
+      width: 20px; height: 20px;
       border-radius: 50%;
-      background: rgba(108,99,255,.1);
-      border: 1px solid rgba(108,99,255,.2);
-      color: var(--accent);
+      background: rgba(232,86,42,.08);
+      border: 1px solid rgba(232,86,42,.2);
+      color: var(--coral);
       font-size: 10px;
-      font-weight: 700;
+      font-weight: 500;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
-      margin-top: 2px;
+      margin-top: 1px;
     }
 
     .endpoint-box {
       width: 100%;
-      max-width: 380px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-family: var(--mono);
-      font-size: 12px;
-      color: var(--accent2);
-      margin-top: 8px;
+      max-width: 340px;
+      background: var(--ink-2);
+      border: 1px solid var(--wire);
+      border-left: 2px solid rgba(240,165,0,.4);
+      border-radius: var(--r);
+      padding: 8px 12px;
+      font-size: 11px;
+      color: var(--green);
+      margin-top: 6px;
       text-align: left;
+      letter-spacing: .04em;
     }
 
     .endpoint-label {
       font-size: 10px;
-      color: var(--muted);
-      letter-spacing: 1px;
+      color: var(--sand-3);
+      letter-spacing: .12em;
       text-transform: uppercase;
-      margin-bottom: 4px;
-      font-family: var(--mono);
+      margin-bottom: 3px;
     }
 
-    /* ── Language picker (step 1) ───────────────────────── */
-    .lang-picker {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .lang-option {
-      flex: 1;
-      padding: 14px 16px;
-      background: var(--card);
-      border: 2px solid var(--border);
-      border-radius: 10px;
-      cursor: pointer;
-      text-align: center;
-      transition: all .2s;
-      font-family: var(--font);
-      color: var(--text);
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    .lang-option:hover { border-color: var(--accent); }
-    .lang-option.selected {
-      border-color: var(--accent);
-      background: rgba(108,99,255,.08);
-      color: var(--accent);
-    }
-
-    .lang-option .flag { font-size: 24px; display: block; margin-bottom: 6px; }
-
-    /* ── Footer nav ─────────────────────────────────────── */
+    /* ── Footer nav ───────────────────────────────── */
     .nav-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 16px 24px;
-      border-top: 1px solid var(--border);
-      background: var(--surface);
+      padding: 11px 18px;
+      border-top: 1px solid var(--wire);
+      background: var(--ink-2);
       flex-shrink: 0;
     }
 
     .btn {
-      padding: 9px 20px;
-      border-radius: 8px;
-      font-family: var(--font);
-      font-size: 13px;
-      font-weight: 600;
+      padding: 7px 18px;
+      border-radius: var(--r);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 400;
       cursor: pointer;
       border: none;
       transition: all .15s;
       display: flex; align-items: center; gap: 6px;
+      letter-spacing: .04em;
     }
 
-    .btn:disabled { opacity: .4; cursor: not-allowed; }
+    .btn:disabled { opacity: .3; cursor: not-allowed; }
 
     .btn-ghost {
       background: transparent;
-      border: 1px solid var(--border);
-      color: var(--muted);
+      border: 1px solid var(--wire);
+      color: var(--sand-2);
     }
 
     .btn-ghost:hover:not(:disabled) {
-      border-color: var(--accent);
-      color: var(--text);
+      border-color: var(--wire-2);
+      color: var(--sand);
     }
 
     .btn-primary {
-      background: var(--accent);
+      background: var(--coral);
       color: #fff;
-      box-shadow: var(--glow);
     }
 
     .btn-primary:hover:not(:disabled) {
-      background: #7c74ff;
+      background: var(--coral-d);
       transform: translateY(-1px);
     }
 
     .btn-primary:active { transform: translateY(0); }
+
+    /* scroll within step 4 */
+    .step-scroll {
+      overflow-y: auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-height: calc(100vh - 46px - 44px - 56px);
+      padding: 4px 0 8px;
+    }
+
+    .step-scroll::-webkit-scrollbar { width: 3px; }
+    .step-scroll::-webkit-scrollbar-track { background: transparent; }
+    .step-scroll::-webkit-scrollbar-thumb { background: var(--wire-2); border-radius: 2px; }
   </style>
 </head>
 <body>
@@ -412,8 +571,10 @@
   <!-- Header -->
   <header>
     <div class="logo">
-      <div class="logo-mark">📎</div>
-      <div class="logo-text">Open<span>Paste</span></div>
+      <div class="logo-mark">
+        <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="7" fill="#e8562a"/><path d="M9 11h14M9 16h9M9 21h11" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="logo-text"><span class="op">Open</span>Paste</div>
     </div>
     <div class="lang-switcher">
       <button class="lang-btn" id="langEn" onclick="pickLang('en')">EN</button>
@@ -434,7 +595,13 @@
 
     <!-- Step 1: Welcome + language -->
     <div class="step active" id="step-0">
-      <div class="step-icon">👋</div>
+      <div class="welcome-icon">
+        <svg viewBox="0 0 32 32" fill="none">
+          <path d="M8 10h16M8 16h10M8 22h13" stroke="#e8562a" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="25" cy="22" r="5" fill="rgba(45,186,94,0.12)" stroke="#2dba5e" stroke-width="1.5"/>
+          <path d="M23 22l1.5 1.5L27 20" stroke="#2dba5e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
       <div class="step-title" data-i18n="onboardStep1Title">Welcome to OpenPaste</div>
       <div class="step-subtitle" data-i18n="onboardStep1Sub">Send anything from iPhone to Windows in two taps.</div>
       <div class="lang-picker">
@@ -502,30 +669,49 @@
 
     <!-- Step 4: iOS Shortcut -->
     <div class="step" id="step-3">
-      <div class="step-title" data-i18n="onboardStep4Title">iOS Shortcut</div>
-      <div class="step-subtitle" data-i18n="onboardStep4Sub">Install the shortcut on your iPhone to start sending content.</div>
+      <div class="step-scroll">
+        <div class="step-title" data-i18n="onboardStep4Title">iOS Shortcut</div>
+        <div class="step-subtitle" data-i18n="onboardStep4Sub">Install the shortcut on your iPhone to start sending content.</div>
 
-      <div style="width:100%;max-width:420px;margin-top:12px;">
-        <div class="endpoint-label" data-i18n="onboardEndpointLabel">Server endpoint</div>
-        <div class="endpoint-box" id="endpointBox">—</div>
-      </div>
+        <div class="shortcut-install-box" style="margin-top:14px;">
+          <span class="install-icon">⚡</span>
+          <div class="install-title" data-i18n="onboardShortcutInstallBtn">Install Shortcut on iPhone</div>
+          <div class="install-hint" data-i18n="onboardShortcutInstallHint">One tap to install — requires Shortcuts app (iOS 13+)</div>
+          <a
+            class="btn-install"
+            href="https://www.icloud.com/shortcuts/c97f3c93f7c8471696888fce8e258aa5"
+            target="_blank"
+            rel="noopener"
+            data-i18n="onboardShortcutInstallBtn"
+          >↓ Install Shortcut on iPhone</a>
+        </div>
 
-      <div class="shortcut-steps">
-        <div class="shortcut-step-item">
-          <div class="step-badge">1</div>
-          <div data-i18n-html="onboardShortcutStep1">Open the <strong>Shortcuts</strong> app on your iPhone and tap <strong>"+"</strong>.</div>
+        <div class="or-divider" style="margin-top:14px;">
+          <span class="or-text" data-i18n="onboardShortcutOrManual">or build manually:</span>
         </div>
-        <div class="shortcut-step-item">
-          <div class="step-badge">2</div>
-          <div data-i18n-html="onboardShortcutStep2">Under <strong>"Shortcut receives"</strong>, enable: Text, URLs, Images, Files and PDFs.</div>
+
+        <div style="width:100%;max-width:380px;margin-bottom:8px;text-align:left;">
+          <div class="endpoint-label" data-i18n="onboardEndpointLabel">Server endpoint</div>
+          <div class="endpoint-box" id="endpointBox">—</div>
         </div>
-        <div class="shortcut-step-item">
-          <div class="step-badge">3</div>
-          <div data-i18n-html="onboardShortcutStep3">Add a <strong>"Get contents of URL"</strong> action with the endpoint shown above.</div>
-        </div>
-        <div class="shortcut-step-item">
-          <div class="step-badge">4</div>
-          <div data-i18n-html="onboardShortcutStep4">Name the shortcut <strong>"Send to PC"</strong> and save.</div>
+
+        <div class="shortcut-steps">
+          <div class="shortcut-step-item">
+            <div class="step-badge">1</div>
+            <div data-i18n-html="onboardShortcutStep1">Open the <strong>Shortcuts</strong> app on your iPhone and tap <strong>"+"</strong>.</div>
+          </div>
+          <div class="shortcut-step-item">
+            <div class="step-badge">2</div>
+            <div data-i18n-html="onboardShortcutStep2">Under <strong>"Shortcut receives"</strong>, enable: Text, URLs, Images, Files and PDFs.</div>
+          </div>
+          <div class="shortcut-step-item">
+            <div class="step-badge">3</div>
+            <div data-i18n-html="onboardShortcutStep3">Add a <strong>"Get contents of URL"</strong> action with the endpoint shown above.</div>
+          </div>
+          <div class="shortcut-step-item">
+            <div class="step-badge">4</div>
+            <div data-i18n-html="onboardShortcutStep4">Name the shortcut <strong>"Send to PC"</strong> and save.</div>
+          </div>
         </div>
       </div>
     </div>

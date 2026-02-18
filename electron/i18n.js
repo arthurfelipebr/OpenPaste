@@ -91,6 +91,9 @@ const strings = {
     onboardShortcutStep3: 'Add a <strong>"Get contents of URL"</strong> action with the endpoint shown above.',
     onboardShortcutStep4: 'Name the shortcut <strong>"Send to PC"</strong> and save.',
     onboardEndpointLabel: 'Server endpoint',
+    onboardShortcutInstallBtn: '↓ Install Shortcut on iPhone',
+    onboardShortcutInstallHint: 'One tap to install — requires Shortcuts app (iOS 13+)',
+    onboardShortcutOrManual: 'or build manually:',
   },
 
   'pt-BR': {
@@ -178,6 +181,9 @@ const strings = {
     onboardShortcutStep3: 'Adicione uma ação <strong>"Obter Conteúdo da URL"</strong> com o endpoint exibido acima.',
     onboardShortcutStep4: 'Nomeie o atalho <strong>"Enviar para PC"</strong> e salve.',
     onboardEndpointLabel: 'Endpoint do servidor',
+    onboardShortcutInstallBtn: '↓ Instalar Atalho no iPhone',
+    onboardShortcutInstallHint: 'Um toque para instalar — requer app Atalhos (iOS 13+)',
+    onboardShortcutOrManual: 'ou crie manualmente:',
   },
 };
 
